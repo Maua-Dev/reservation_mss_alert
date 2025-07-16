@@ -1,14 +1,27 @@
 import abc
+import uuid
 from src.shared.helpers.errors.domain_errors import EntityError, EntityParameterOrderDatesError
 
 class alert(abc.ABC):
+    alert_id: str
     title: str
     description: str
     start_date: int
     end_date: int
     severity: int
     
-    def __init__(self, title: str, description: str, start_date: int, end_date: int, severity: int):
+    def __init__(self, 
+                 alert_id: str, 
+                 title: str, 
+                 description: str, 
+                 start_date: int, 
+                 end_date: int, 
+                 severity: int):
+        
+        if not alert.validate_alert_id(alert_id):
+            raise EntityError("alert_id")
+        self.alert_id = alert_id
+        
         if not alert.validate_title(title): 
             raise EntityError("title")
         if not alert.validate_title_first_char(title):
@@ -35,6 +48,19 @@ class alert(abc.ABC):
     
     
     #Lógica das validações:
+    
+    @staticmethod
+    def validate_alert_id(alert_id: str) -> bool:
+        if alert_id is None:
+            return False
+        if not isinstance(alert_id, str):
+            return False
+        try:
+            uuid.UUID(str(alert_id))
+            return True
+        except ValueError:
+            return False
+    
     @staticmethod
     def validate_title(title: str) -> bool:
         if title is None:
