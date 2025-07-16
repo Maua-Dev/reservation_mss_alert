@@ -20,27 +20,26 @@ app = cdk.App()
 aws_region = os.environ.get("AWS_REGION")
 aws_account_id = os.environ.get("AWS_ACCOUNT_ID")
 stack_name = os.environ.get("STACK_NAME")
+github_ref = os.environ.get("GITHUB_REF_NAME")
 
-if 'prod' in stack_name:
+stage = ''
+if 'prod' in github_ref:
     stage = 'PROD'
-
-elif 'homolog' in stack_name:
+elif 'homolog' in github_ref:
     stage = 'HOMOLOG'
-
-elif 'dev' in stack_name:
+elif 'dev' in github_ref:
     stage = 'DEV'
-
 else:
     stage = 'TEST'
 
 tags = {
-    'project': 'Template',
+    'project': 'Reservation Alerts MSS',
     'stage': stage,
     'stack': 'BACK',
     'owner': 'DevCommunity'
 }
 
-TemplateStack(app, stack_name=stack_name, env=cdk.Environment(account=aws_account_id, region=aws_region), tags=tags)
+TemplateStack(app, stack_name, env=cdk.Environment(account=aws_account_id, region=aws_region), tags=tags)
 
 
 app.synth()
