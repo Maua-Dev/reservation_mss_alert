@@ -7,17 +7,29 @@ from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
 from .lambda_stack import LambdaStack
-from .template_dynamo_table import TemplateDynamoTable
+from .dynamo_stack import DynamoStack
+
+import os
 
 
-class TemplateStack(Stack):
+class IacStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        
+        self.github_ref = os.environ.get('GITHUB_REF_NAME')
+        self.stack_name = os.environ.get("STACK_NAME")
+        stage = ''
+        if 'prod' in self.github_ref:
+            stage = 'PROD'
+        elif 'homolog' in self.github_ref:
+            stage = 'HOMOLOG'
+        else:
+            stage = 'DEV'
 
-        self.rest_api = RestApi(self, "Template_RestApi",
-                                    rest_api_name="Template_RestApi",
-                                    description="This is the Template RestApi",
+        self.rest_api = RestApi(self, f"{self.stack_name}_RestApi_{stage}",
+                                    rest_api_name=f"{self.stack_name}_RestApi_{stage}",
+                                    description=f"This is the {self.stack_name} {stage} RestApi",
                                     default_cors_preflight_options=
                                     {
                                         "allow_origins": Cors.ALL_ORIGINS,
@@ -26,7 +38,7 @@ class TemplateStack(Stack):
                                     },
                                 )
 
-        api_gateway_resource = self.rest_api.root.add_resource("mss-template", default_cors_preflight_options=
+        api_gateway_resource = self.rest_api.root.add_resource("reservation-mss-alert", default_cors_preflight_options=
         {
             "allow_origins": Cors.ALL_ORIGINS,
             "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -34,7 +46,7 @@ class TemplateStack(Stack):
         }
                                                                )
 
-        self.dynamo_table = TemplateDynamoTable(self, "TemplateDynamoTable")
+        self.dynamo_table = DynamoStack(self)
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": "DEV",

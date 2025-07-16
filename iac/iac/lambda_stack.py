@@ -29,9 +29,20 @@ class LambdaStack(Construct):
         return function
 
     def __init__(self, scope: Construct, api_gateway_resource: Resource, environment_variables: dict) -> None:
-        super().__init__(scope, "Template_Lambdas")
+        
+        self.github_ref = os.environ.get('GITHUB_REF_NAME')
+        self.stack_name = os.environ.get("STACK_NAME")
+        stage = ''
+        if 'prod' in self.github_ref:
+            stage = 'PROD'
+        elif 'homolog' in self.github_ref:
+            stage = 'HOMOLOG'
+        else:
+            stage = 'DEV'
+        
+        super().__init__(scope, f"{self.stack_name}_LambdaStack_{stage}")
 
-        self.lambda_layer = lambda_.LayerVersion(self, "Template_Layer",
+        self.lambda_layer = lambda_.LayerVersion(self, f"{self.stack_name}_LambdaLayer_{stage}",
                                                  code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
                                                  compatible_runtimes=[lambda_.Runtime.PYTHON_3_9]
                                                  )

@@ -4,7 +4,7 @@ import os
 import aws_cdk as cdk
 from adjust_layer_directory import adjust_layer_directory
 
-from iac.template_stack import TemplateStack
+from iac.iac.iac_stack import TemplateStack
 
 
 
