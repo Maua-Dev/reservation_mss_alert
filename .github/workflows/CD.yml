@@ -56,10 +56,10 @@ jobs:
           else
             echo "Invalid branch name!" && exit 1
           fi
-          echo "STACK_NAME=ReservationStackAlerts${{env.STAGE}}" >> $GITHUB_ENV
+          echo "STACK_NAME=ReservationStackAlerts${{ env.STAGE }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v3
-      
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
@@ -69,6 +69,9 @@ jobs:
           npm install -g aws-cdk
           cd iac
           pip install -r requirements.txt
+
+      - name: Display all environment variables for debugging
+        run: env
 
       - name: DeployWithCDK
         run: |
