@@ -58,7 +58,7 @@ class alert(abc.ABC):
     
     @staticmethod
     def validate_dates(start_date: int, end_date: int) -> bool:
-        if start_date or end_date is None:
+        if start_date is None or end_date is None:
             return False
         if not isinstance(start_date, int) or not isinstance(end_date, int):
             return False
