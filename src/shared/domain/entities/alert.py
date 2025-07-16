@@ -13,6 +13,10 @@ class alert(abc.ABC):
             raise EntityError(title)
         self.title = title
         
+        if not alert.validate_title_first_char(title):
+            raise EntityError(title)
+        self.title = title
+        
         if not alert.validate_description(description): 
             raise EntityError("title")
         self.description = description
@@ -36,6 +40,12 @@ class alert(abc.ABC):
     @staticmethod
     def validate_title(title: str) -> bool:
         if not isinstance(title, str):
+            return False
+        return True
+    
+    def validate_title_first_char(title: str) -> bool:
+        first_char = title[0]
+        if title[0].upper != first_char:
             return False
         return True
     
