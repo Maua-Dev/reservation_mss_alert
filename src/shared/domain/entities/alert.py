@@ -10,15 +10,13 @@ class alert(abc.ABC):
     
     def __init__(self, title: str, description: str, start_date: int, end_date: int, severity: int):
         if not alert.validate_title(title): 
-            raise EntityError(title)
-        self.title = title
-        
+            raise EntityError("title")
         if not alert.validate_title_first_char(title):
-            raise EntityError(title)
+            raise EntityError("title")
         self.title = title
         
         if not alert.validate_description(description): 
-            raise EntityError("title")
+            raise EntityError("description")
         self.description = description
         
         if not alert.validate_dates(start_date, end_date): 
@@ -46,8 +44,7 @@ class alert(abc.ABC):
         return True
     
     def validate_title_first_char(title: str) -> bool:
-        first_char = title[0]
-        if title[0].upper != first_char:
+        if not title[0].isupper():
             return False
         return True
     
@@ -61,9 +58,9 @@ class alert(abc.ABC):
     
     @staticmethod
     def validate_dates(start_date: int, end_date: int) -> bool:
-        if not isinstance(start_date, int) or not isinstance(end_date, int):
-            return False
         if start_date or end_date is None:
+            return False
+        if not isinstance(start_date, int) or not isinstance(end_date, int):
             return False
         return True
     
