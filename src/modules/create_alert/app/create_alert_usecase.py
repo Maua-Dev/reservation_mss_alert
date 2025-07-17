@@ -19,9 +19,8 @@ class CreateAlertUsecase:
         try:
             
             eb_client = EventBridgeClient()
-            
-            rule_name = eb_client.create_trigger_for_deletion(int(datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
-            
+            rule_name = eb_client.create_trigger_for_deletion(int(datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
+        
         except:
             raise Exception("Could not create event")
         
