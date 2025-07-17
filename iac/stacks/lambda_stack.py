@@ -64,7 +64,7 @@ class LambdaStack(Construct):
         # )
         
         self.delete_alert = self.create_lambda_api_gateway_integration(
-            module_name="create_alert",
+            module_name="delete_alert",
             method="POST",
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables
