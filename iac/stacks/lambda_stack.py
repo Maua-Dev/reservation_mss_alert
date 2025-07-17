@@ -71,20 +71,20 @@ class LambdaStack(Construct):
             environment_variables=environment_variables
         )
         
-        env_vars_for_create = environment_variables.copy()
-        env_vars_for_create["DELETE_ALERT_LAMBDA_ARN"] = self.delete_alert.function_arn
+        env_vars_with_arn = environment_variables.copy()
+        env_vars_with_arn["DELETE_ALERT_LAMBDA_ARN"] = self.delete_alert.function_arn
         
         self.create_alert = self.create_lambda_api_gateway_integration(
             module_name="create_alert",
             method="POST",
             mss_alert_api_resource=api_gateway_resource,
-            environment_variables=env_vars_for_create
+            environment_variables=env_vars_with_arn
         )
         
         self.delete_alert.grant_invoke(self.create_alert)
         self.functions_that_need_dynamo_permissions = []
         
         CfnOutput(self, "DeleteAlertLambdaArn",
-            value=env_vars_for_create.get("DELETE_ALERT_LAMBDA_ARN", "not found"),
+            value=env_vars_with_arn.get("DELETE_ALERT_LAMBDA_ARN", "not found"),
             description="ARN of the Delete Alert Lambda function"
         )

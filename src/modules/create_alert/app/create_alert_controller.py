@@ -27,7 +27,7 @@ class CreateAlertController:
 
             print("End controller")
 
-            user = self.CreateAlertUsecase(
+            alert = self.CreateAlertUsecase(
                 title=title,
                 description=description,
                 start_date=start_date,
@@ -36,7 +36,7 @@ class CreateAlertController:
                 is_permanent=is_permanent
             )
 
-            viewmodel = CreateAlertViewmodel(user=user)
+            viewmodel = CreateAlertViewmodel(alert=alert)
 
             return OK(viewmodel.to_dict())
 
