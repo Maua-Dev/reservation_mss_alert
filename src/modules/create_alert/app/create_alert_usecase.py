@@ -16,13 +16,8 @@ class CreateAlertUsecase:
 
         id = str(uuid.uuid4())
         
-        try:
-            
-            eb_client = EventBridgeClient()
-            rule_name = eb_client.create_trigger_for_deletion(int(datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
-        
-        except:
-            raise Exception("Could not create event")
+        eb_client = EventBridgeClient()
+        rule_name = eb_client.create_trigger_for_deletion(int(datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
         
         new_alert = Alert(
             alert_id=id,
