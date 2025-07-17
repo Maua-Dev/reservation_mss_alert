@@ -2,68 +2,84 @@ import boto3
 from src.shared.environments import Environments
 import uuid
 from datetime import datetime, timezone
+from botocore.exceptions import ClientError
 
 class EventBridgeClient:
     
     def __init__(self):
-        
         self.__envs = Environments.get_envs()
         stage = self.__envs.stage.value
         
         self.delete_alert_lambda_arn = self.__envs.delete_alert_lambda_arn
         
-        print("Entering event bridge client")
+        print("Initializing EventBridge client...")
         
         if stage == "TEST":
             self.eventbridge = boto3.client(
                 "events",
-                aws_access_key_id = self.__envs.client_id,
-                aws_secret_access_key_id = self.__envs.client_secret,
+                aws_access_key_id=self.__envs.client_id,
+                aws_secret_access_key=self.__envs.client_secret, # Note: Corrected parameter name
                 endpoint_url=self.__envs.endpoint_url,
                 region_name=self.__envs.region,
             )
-            
         else:
             self.eventbridge = boto3.client("events")
             
     def create_trigger_for_deletion(self, expire: int) -> str:
         
-        print("Entered method")
-        
-        dt = datetime.fromtimestamp(expire, tz=timezone.utc)
+        # 1. Validate the timestamp first to fail fast
+        try:
+            dt = datetime.fromtimestamp(expire, tz=timezone.utc)
+            if dt <= datetime.now(timezone.utc):
+                raise ValueError("Timestamp 'expire' must be in the future.")
+        except (ValueError, TypeError) as e:
+            # Catches invalid timestamps or non-numeric input
+            raise ValueError(f"Invalid 'expire' timestamp provided: {e}")
 
-        if dt <= datetime.now(timezone.utc):
-            raise ValueError("Timestamp 'expire' must be in the future.")
-        
         rule_name = f"one-time-trigger-{uuid.uuid4()}"
-        
         cron_expr = f"cron({dt.minute} {dt.hour} {dt.day} {dt.month} ? {dt.year})"
-        rule_name = f"one-time-trigger-{uuid.uuid4()}"
         
-        print("B4 put_rule")
+        # 2. Try to create the EventBridge rule
+        try:
+            print(f"Attempting to create rule: {rule_name}")
+            self.eventbridge.put_rule(
+                Name=rule_name,
+                ScheduleExpression=cron_expr,
+                State="ENABLED"
+            )
+            print(f"Successfully created rule: {rule_name}")
         
-        self.eventbridge.put_rule(
-            Name=rule_name,
-            ScheduleExpression=cron_expr,
-            State="ENABLED"
-        )
+        except ClientError as e:
+            # Handle exceptions from the put_rule API call (e.g., permissions, invalid expression)
+            print(f"ERROR: Failed to create EventBridge rule '{rule_name}'. Reason: {e.response['Error']['Message']}")
+            raise Exception(f"Could not create EventBridge rule: {e}")
         
-        print("Passed put rule")
-        
-        self.eventbridge.put_targets(
-            Rule=rule_name,
-            Targets=[
-                {
-                    "Id": "1",
-                    "Arn": self.delete_alert_lambda_arn,
-                }
-            ]
-        )
-        
-        print("Passed put_target !!!!")
+        # 3. Try to add the target to the rule
+        try:
+            print(f"Attempting to set target for rule: {rule_name}")
+            self.eventbridge.put_targets(
+                Rule=rule_name,
+                Targets=[
+                    {
+                        "Id": "DeleteAlertLambdaTarget",
+                        "Arn": self.delete_alert_lambda_arn,
+                    }
+                ]
+            )
+            print("Successfully set target for rule.")
+            
+        except ClientError as e:
+            print(f"ERROR: Failed to set target for rule '{rule_name}'. Attempting cleanup.")
+            
+            # CLEANUP: If setting the target fails, try to delete the orphaned rule
+            try:
+                self.eventbridge.delete_rule(Name=rule_name)
+                print(f"Cleanup successful: Deleted orphaned rule '{rule_name}'.")
+            except ClientError as cleanup_error:
+                # This is a critical failure, as the rule is now orphaned without a target
+                print(f"CRITICAL ERROR: Failed to delete orphaned rule '{rule_name}'. Manual cleanup required. Error: {cleanup_error}")
+            
+            # Propagate the original error after attempting cleanup
+            raise Exception(f"Could not set target for EventBridge rule: {e}")
         
         return rule_name
-        
-        
-
-        
