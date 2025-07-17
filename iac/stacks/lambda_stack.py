@@ -11,7 +11,7 @@ from aws_cdk.aws_apigateway import Resource, LambdaIntegration
 class LambdaStack(Construct):
     functions_that_need_dynamo_permissions = []
 
-    def create_lambda_api_gateway_integration(self, module_name: str, method: str, mss_student_api_resource: Resource,
+    def create_lambda_api_gateway_integration(self, module_name: str, method: str, mss_alert_api_resource: Resource,
                                               environment_variables: dict = {"STAGE": "TEST"}):
         function = lambda_.Function(
             self, module_name.title(),
@@ -64,7 +64,7 @@ class LambdaStack(Construct):
         self.create_alert = self.create_lambda_api_gateway_integration(
             module_name="create_alert",
             method="POST",
-            api_resource=api_gateway_resource,
+            mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables
         )
         
