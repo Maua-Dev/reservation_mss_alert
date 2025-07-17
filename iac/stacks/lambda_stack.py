@@ -23,7 +23,7 @@ class LambdaStack(Construct):
             timeout=Duration.seconds(15)
         )
 
-        mss_student_api_resource.add_resource(module_name.replace("_", "-")).add_method(method,
+        mss_alert_api_resource.add_resource(module_name.replace("_", "-")).add_method(method,
                                                                                         integration=LambdaIntegration(
                                                                                             function))
 
