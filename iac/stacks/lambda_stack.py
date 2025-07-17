@@ -1,7 +1,8 @@
 import os
 from aws_cdk import (
     aws_lambda as lambda_,
-    NestedStack, Duration
+    NestedStack, Duration,
+    aws_apigateway as apigw
 )
 from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
@@ -39,6 +40,24 @@ class LambdaStack(Construct):
                                                  code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
                                                  compatible_runtimes=[lambda_.Runtime.PYTHON_3_9]
                                                  )
+        
+        authorizer_lambda = lambda_.Function(
+            self, "AuthorizerUserMssReservationMssAlertLambda",
+            code=lambda_.Code.from_asset("../src/shared/authorizer"),
+            handler="authorizer_user_mss.lambda_handler",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            layers=[self.lambda_layer, self.lambda_power_tools],
+            environment=environment_variables,
+            timeout=Duration.seconds(15)
+        )
+
+        token_authorizer_lambda = apigw.TokenAuthorizer(
+            self, "TokenAuthorizerReservationMssUser",
+            handler=authorizer_lambda,
+            identity_source=apigw.IdentitySource.header("Authorization"),
+            authorizer_name="AuthorizerUserMssReservationMssAlertLambda",
+            results_cache_ttl=Duration.seconds(0)
+        )
 
         self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(self, "Lambda_Power_Tools", layer_version_arn="arn:aws:lambda:us-east-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:22")
 
