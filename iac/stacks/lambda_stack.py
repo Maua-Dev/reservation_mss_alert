@@ -63,11 +63,22 @@ class LambdaStack(Construct):
         #     results_cache_ttl=Duration.seconds(0)
         # )
         
-        self.create_alert = self.create_lambda_api_gateway_integration(
+        self.delete_alert = self.create_lambda_api_gateway_integration(
             module_name="create_alert",
             method="POST",
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables
         )
         
+        env_vars_for_create = environment_variables.copy()
+        env_vars_for_create["DELETE_ALERT_LAMBDA_ARN"] = self.delete_alert.function_arn
+        
+        self.create_alert = self.create_lambda_api_gateway_integration(
+            module_name="create_alert",
+            method="POST",
+            mss_alert_api_resource=api_gateway_resource,
+            environment_variables=env_vars_for_create
+        )
+        
+        self.delete_alert.grant_invoke(self.create_alert)
         self.functions_that_need_dynamo_permissions = []
