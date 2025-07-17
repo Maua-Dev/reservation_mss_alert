@@ -3,12 +3,14 @@ from src.shared.environments import Environments
 import uuid
 from datetime import datetime, timezone
 
-class event_bridge_client:
+class EventBridgeClient:
     
     def __init__(self):
         
         self.__envs = Environments.get_envs()
         stage = self.__envs.stage.value
+        
+        self.delete_alert_lambda_arn = self.__envs.delete_alert_lambda_arn
         
         if stage == "TEST":
             self.eventbridge = boto3.client(
@@ -22,7 +24,7 @@ class event_bridge_client:
         else:
             self.eventbridge = boto3.client("events")
             
-    def create_trigger(self, lambda_arn: str, expire: int) -> str:
+    def create_trigger_for_deletion(self, expire: int) -> str:
         
         dt = datetime.fromtimestamp(expire, tz=timezone.utc)
 
