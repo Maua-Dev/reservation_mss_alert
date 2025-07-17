@@ -13,7 +13,7 @@ class CreateAlertController:
     def __init__(self, usecase: CreateAlertUsecase):
         self.CreateAlertUsecase = usecase
 
-    def __call__(self, request: IRequest) -> IResponse:
+    def __call__(self, request: IRequest) -> IResponse:        
         try:
             
             title = request.data.get("title", None)
@@ -24,6 +24,8 @@ class CreateAlertController:
             is_permanent = request.data.get("is_permanent", None)
             
             #must do some more validaitions, this is only for testing if event bridge client is working correctly
+
+            print("End controller")
 
             user = self.CreateAlertUsecase(
                 title=title,

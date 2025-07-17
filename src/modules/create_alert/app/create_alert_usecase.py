@@ -11,6 +11,8 @@ class CreateAlertUsecase:
     def __call__(self, title: str, description: str, start_date: int, end_date: int, 
                 # severity: int,
                 is_permanent: bool) -> Alert:
+        
+        print("Entered usecase")
 
         id = str(uuid.uuid4())
         
@@ -18,7 +20,7 @@ class CreateAlertUsecase:
             
             eb_client = EventBridgeClient()
             
-            rule_name = eb_client.create_trigger(int(datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
+            rule_name = eb_client.create_trigger_for_deletion(int(datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
             
         except:
             raise Exception("Could not create event")
