@@ -12,7 +12,7 @@ class Test_Alert:
             description = "quadra molhada por conta da chuva", 
             start_date = int(time.time()), 
             end_date =  int(time.time()) + 7200000, 
-            severity = 2,
+            # severity = 2,
             is_permanent = False
         )
     
@@ -24,7 +24,7 @@ class Test_Alert:
                 description = "quadra molhada por conta da chuva", 
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
-                severity = 2,
+                # severity = 2,
                 is_permanent = False
             )
     
@@ -36,7 +36,7 @@ class Test_Alert:
                 description = "quadra molhada por conta da chuva", 
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
-                severity = 2,
+                # severity = 2,
                 is_permanent = False
             )
     
@@ -48,7 +48,7 @@ class Test_Alert:
                 description = "quadra molhada por conta da chuva", 
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
-                severity = 2,
+                # severity = 2,
                 is_permanent = False
             )
     
@@ -60,7 +60,7 @@ class Test_Alert:
                 description = "quadra molhada por conta da chuva", 
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
-                severity = 2,
+                # severity = 2,
                 is_permanent = False
             )
     
@@ -72,7 +72,7 @@ class Test_Alert:
                 description = "quadra molhada por conta da chuva", 
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
-                severity = 2,
+                # severity = 2,
                 is_permanent = False
             )
     
@@ -84,7 +84,7 @@ class Test_Alert:
                 description="quadra molhada por conta da chuva", 
                 start_date=int(time.time()), 
                 end_date=int(time.time()) + 7200000,
-                severity=2,
+                # severity=2,
                 is_permanent = False
             )
     
@@ -96,7 +96,7 @@ class Test_Alert:
                 description=None,
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
-                severity=2,
+                # severity=2,
                 is_permanent = False
             )
     
@@ -108,7 +108,7 @@ class Test_Alert:
                 description=123,
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
-                severity=2,
+                # severity=2,
                 is_permanent = False
             )   
     
@@ -120,7 +120,7 @@ class Test_Alert:
                 description="quadra molhada",
                 start_date="hoje",
                 end_date="amanha",
-                severity=2,
+                # severity=2,
                 is_permanent = False
             )
             
@@ -133,35 +133,35 @@ class Test_Alert:
                 description="quadra molhada",
                 start_date=now + 7200000,
                 end_date=now,
-                severity=2,
+                # severity=2,
                 is_permanent = False
             )
     
-    def test_severity_is_none(self):
-        with pytest.raises(EntityError):
-            Alert(
-                alert_id=str(uuid.uuid4()), 
-                title="Aviso",
-                description="quadra molhada",
-                start_date=int(time.time()),
-                end_date=int(time.time()) + 7200000,
-                severity=None,
-                is_permanent = False
-            )
+    # def test_severity_is_none(self):
+    #     with pytest.raises(EntityError):
+    #         Alert(
+    #             alert_id=str(uuid.uuid4()), 
+    #             title="Aviso",
+    #             description="quadra molhada",
+    #             start_date=int(time.time()),
+    #             end_date=int(time.time()) + 7200000,
+    #             severity=None,
+    #             is_permanent = False
+    #         )
      
     #krl muito interessante eu nao conhecia esse mark.parametrize!!!!! pika
-    @pytest.mark.parametrize("severity", [0, 4, -1, 10])
-    def test_severity_out_of_bounds(self, severity):
-        with pytest.raises(EntityError):
-            Alert(
-                alert_id=str(uuid.uuid4()), 
-                title="Aviso",
-                description="quadra molhada",
-                start_date=int(time.time()),
-                end_date=int(time.time()) + 7200000,
-                severity=severity,
-                is_permanent = False
-            )
+    # @pytest.mark.parametrize("severity", [0, 4, -1, 10])
+    # def test_severity_out_of_bounds(self, severity):
+    #     with pytest.raises(EntityError):
+    #         Alert(
+    #             alert_id=str(uuid.uuid4()), 
+    #             title="Aviso",
+    #             description="quadra molhada",
+    #             start_date=int(time.time()),
+    #             end_date=int(time.time()) + 7200000,
+    #             severity=severity,
+    #             is_permanent = False
+    #         )
             
     def test_is_permanent_not_bool(self):
         with pytest.raises(EntityError):
@@ -171,7 +171,7 @@ class Test_Alert:
                 description="quadra molhada",
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
-                severity=1,
+                # severity=1,
                 is_permanent = "False"
             )
             
@@ -183,7 +183,7 @@ class Test_Alert:
                 description="quadra molhada",
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
-                severity=1,
+                # severity=1,
                 is_permanent = None
             )
     

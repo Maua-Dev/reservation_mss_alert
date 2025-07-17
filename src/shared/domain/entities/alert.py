@@ -8,7 +8,7 @@ class Alert(abc.ABC):
     description: str    #required
     start_date: int     #required
     end_date: int       #required
-    severity: int       #required
+    # severity: int       #required
     is_permanent: bool  #required
     
     def __init__(self, 
@@ -17,7 +17,7 @@ class Alert(abc.ABC):
                  description: str, 
                  start_date: int, 
                  end_date: int, 
-                 severity: int,
+                #  severity: int,
                  is_permanent: bool):
         
         if not Alert.validate_alert_id(alert_id):
@@ -44,9 +44,9 @@ class Alert(abc.ABC):
         self.start_date = start_date
         self.end_date = end_date
         
-        if not Alert.validate_severity(severity):
-            raise EntityError("severity")
-        self.severity = severity
+        # if not Alert.validate_severity(severity):
+        #     raise EntityError("severity")
+        # self.severity = severity
         
         if not Alert.validate_is_permanent(is_permanent):
             raise EntityError("is_permanent")
@@ -102,15 +102,15 @@ class Alert(abc.ABC):
             return False
         return True
     
-    @staticmethod
-    def validate_severity(severity) -> bool:
-        if severity is None:
-            return False
-        if not isinstance(severity, int):
-            return False
-        if severity<1 or severity>3:
-            return False
-        return True
+    # @staticmethod
+    # def validate_severity(severity) -> bool:
+    #     if severity is None:
+    #         return False
+    #     if not isinstance(severity, int):
+    #         return False
+    #     if severity<1 or severity>3:
+    #         return False
+    #     return True
     
     @staticmethod
     def validate_is_permanent(is_permanent: bool) -> bool:
