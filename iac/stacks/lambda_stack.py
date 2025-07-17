@@ -3,7 +3,8 @@ from aws_cdk import (
     aws_lambda as lambda_,
     NestedStack, Duration,
     aws_apigateway as apigw,
-    CfnOutput
+    CfnOutput, Stack,
+    aws_iam as iam
 )
 from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
@@ -81,7 +82,20 @@ class LambdaStack(Construct):
             environment_variables=env_vars_with_arn
         )
         
-        self.delete_alert.grant_invoke(self.create_alert)
+        event_bridge_policy = iam.PolicyStatement(
+        effect=iam.Effect.ALLOW,
+        actions=[
+            "events:PutRule",
+            "events:PutTargets",
+            "events:DeleteRule"
+        ],
+        resources=[
+            f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
+        ]
+        )
+    
+        self.create_alert.add_to_principal_policy(event_bridge_policy)
+        
         self.functions_that_need_dynamo_permissions = []
         
         CfnOutput(self, "DeleteAlertLambdaArn",
