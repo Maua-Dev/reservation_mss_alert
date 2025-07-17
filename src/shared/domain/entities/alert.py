@@ -3,12 +3,13 @@ import uuid
 from src.shared.helpers.errors.domain_errors import EntityError, EntityParameterOrderDatesError
 
 class Alert(abc.ABC):
-    alert_id: str
-    title: str
-    description: str
-    start_date: int
-    end_date: int
-    severity: int
+    alert_id: str       #required
+    title: str          #required
+    description: str    #required
+    start_date: int     #required
+    end_date: int       #required
+    severity: int       #required
+    is_permanent: bool  #required
     
     def __init__(self, 
                  alert_id: str, 
@@ -16,7 +17,8 @@ class Alert(abc.ABC):
                  description: str, 
                  start_date: int, 
                  end_date: int, 
-                 severity: int):
+                 severity: int,
+                 is_permanent: bool):
         
         if not Alert.validate_alert_id(alert_id):
             raise EntityError("alert_id")
@@ -45,6 +47,10 @@ class Alert(abc.ABC):
         if not Alert.validate_severity(severity):
             raise EntityError("severity")
         self.severity = severity
+        
+        if not Alert.validate_is_permanent(is_permanent):
+            raise EntityError("is_permanent")
+        self.is_permanent = is_permanent
     
     
     #Lógica das validações:
@@ -103,6 +109,14 @@ class Alert(abc.ABC):
         if not isinstance(severity, int):
             return False
         if severity<1 or severity>3:
+            return False
+        return True
+    
+    @staticmethod
+    def validate_is_permanent(is_permanent: bool) -> bool:
+        if is_permanent is None:
+            return False
+        if not isinstance(is_permanent, bool):
             return False
         return True
     
