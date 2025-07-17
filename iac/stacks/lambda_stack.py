@@ -41,6 +41,8 @@ class LambdaStack(Construct):
                                                  compatible_runtimes=[lambda_.Runtime.PYTHON_3_9]
                                                  )
         
+        self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(self, "Lambda_Power_Tools", layer_version_arn="arn:aws:lambda:us-east-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:22")
+        
         authorizer_lambda = lambda_.Function(
             self, "AuthorizerUserMssReservationMssAlertLambda",
             code=lambda_.Code.from_asset("../src/shared/authorizer"),
@@ -58,7 +60,5 @@ class LambdaStack(Construct):
             authorizer_name="AuthorizerUserMssReservationMssAlertLambda",
             results_cache_ttl=Duration.seconds(0)
         )
-
-        self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(self, "Lambda_Power_Tools", layer_version_arn="arn:aws:lambda:us-east-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:22")
 
         self.functions_that_need_dynamo_permissions = []
