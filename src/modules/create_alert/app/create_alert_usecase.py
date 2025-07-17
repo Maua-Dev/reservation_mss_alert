@@ -1,0 +1,38 @@
+from src.shared.domain.entities.alert import Alert
+from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
+from src.shared.clients.event_bridge_client import EventBridgeClient
+import uuid
+from datetime import datetime, timezone
+
+class CreateAlertUsecase:
+    def __init__(self, repo: IAlertRepository):
+        self.repo = repo
+
+    def __call__(self, title: str, description: str, start_date: int, end_date: int, 
+                # severity: int,
+                is_permanent: bool) -> Alert:
+
+        id = str(uuid.uuid4())
+        
+        try:
+            
+            eb_client = EventBridgeClient()
+            
+            rule_name = eb_client.create_trigger(int(datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
+            
+        except:
+            raise Exception("Could not create event")
+        
+        new_alert = Alert(
+            alert_id=id,
+            title=title,
+            description=description,
+            start_date=start_date,
+            end_date=end_date,
+            # severity=severity
+            is_permanent=is_permanent
+        )
+
+        created_alert = self.repo.create_alert(alert=new_alert)
+
+        return created_alert

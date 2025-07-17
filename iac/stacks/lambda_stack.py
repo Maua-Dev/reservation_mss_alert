@@ -43,22 +43,29 @@ class LambdaStack(Construct):
         
         self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(self, "Lambda_Power_Tools", layer_version_arn="arn:aws:lambda:us-east-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:22")
         
-        authorizer_lambda = lambda_.Function(
-            self, "AuthorizerUserMssReservationMssAlertLambda",
-            code=lambda_.Code.from_asset("../src/shared/authorizer"),
-            handler="authorizer_user_mss.lambda_handler",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            layers=[self.lambda_layer, self.lambda_power_tools],
-            environment=environment_variables,
-            timeout=Duration.seconds(15)
-        )
+        # authorizer_lambda = lambda_.Function(
+        #     self, "AuthorizerUserMssReservationMssAlertLambda",
+        #     code=lambda_.Code.from_asset("../src/shared/authorizer"),
+        #     handler="authorizer_user_mss.lambda_handler",
+        #     runtime=lambda_.Runtime.PYTHON_3_9,
+        #     layers=[self.lambda_layer, self.lambda_power_tools],
+        #     environment=environment_variables,
+        #     timeout=Duration.seconds(15)
+        # )
 
-        token_authorizer_lambda = apigw.TokenAuthorizer(
-            self, "TokenAuthorizerReservationMssUser",
-            handler=authorizer_lambda,
-            identity_source=apigw.IdentitySource.header("Authorization"),
-            authorizer_name="AuthorizerUserMssReservationMssAlertLambda",
-            results_cache_ttl=Duration.seconds(0)
+        # token_authorizer_lambda = apigw.TokenAuthorizer(
+        #     self, "TokenAuthorizerReservationMssUser",
+        #     handler=authorizer_lambda,
+        #     identity_source=apigw.IdentitySource.header("Authorization"),
+        #     authorizer_name="AuthorizerUserMssReservationMssAlertLambda",
+        #     results_cache_ttl=Duration.seconds(0)
+        # )
+        
+        self.create_alert = self.create_lambda_api_gateway_integration(
+            module_name="create_alert",
+            method="POST",
+            api_resource=api_gateway_resource,
+            environment_variables=environment_variables
         )
-
+        
         self.functions_that_need_dynamo_permissions = []
