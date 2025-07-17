@@ -2,7 +2,8 @@ import os
 from aws_cdk import (
     aws_lambda as lambda_,
     NestedStack, Duration,
-    aws_apigateway as apigw
+    aws_apigateway as apigw,
+    CfnOutput
 )
 from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
@@ -82,3 +83,8 @@ class LambdaStack(Construct):
         
         self.delete_alert.grant_invoke(self.create_alert)
         self.functions_that_need_dynamo_permissions = []
+        
+        CfnOutput(self, "DeleteAlertLambdaArn",
+            value=env_vars_for_create.get("DELETE_ALERT_LAMBDA_ARN", "not found"),
+            description="ARN of the Delete Alert Lambda function"
+        )
