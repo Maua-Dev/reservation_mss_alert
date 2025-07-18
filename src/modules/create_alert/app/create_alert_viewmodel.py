@@ -15,6 +15,7 @@ class CreateAlertViewmodel:
         self.title = alert.title
         self.description = alert.description
         self.start_date = alert.start_date
+        self.end_date = alert.end_date
         # self.severity = alert.severity
         self.is_rule = alert.is_rule
         

@@ -3,6 +3,7 @@ from src.shared.domain.repositories.alert_repository_interface import IAlertRepo
 from src.shared.clients.event_bridge_client import EventBridgeClient
 import uuid
 from datetime import datetime, timezone
+from src.shared.environments import Environments
 
 class CreateAlertUsecase:
     def __init__(self, repo: IAlertRepository):
@@ -16,9 +17,10 @@ class CreateAlertUsecase:
 
         id = str(uuid.uuid4())
         
-        eb_client = EventBridgeClient()
-        rule_name = eb_client.create_trigger_for_deletion(int(datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
-        
+        if not Environments.get_envs().stage.value == "TEST" :
+            eb_client = EventBridgeClient()
+            rule_name = eb_client.create_trigger_for_deletion(int(datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc).timestamp()))
+            
         new_alert = Alert(
             alert_id=id,
             title=title,

@@ -35,4 +35,4 @@ class AlertRepositoryMock(IAlertRepository):
         
         self.alerts.append(alert)
         
-        return Alert
+        return alert
