@@ -13,7 +13,7 @@ class Test_Alert:
             start_date = int(time.time()), 
             end_date =  int(time.time()) + 7200000, 
             # severity = 2,
-            is_permanent = False
+            is_rule = False
         )
     
     def test_alert_id_is_none(self):
@@ -25,7 +25,7 @@ class Test_Alert:
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent = False
+                is_rule = False
             )
     
     def test_alert_id_is_not_string(self):
@@ -37,7 +37,7 @@ class Test_Alert:
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent = False
+                is_rule = False
             )
     
     def test_alert_it_is_not_valid_uuid(self):
@@ -49,7 +49,7 @@ class Test_Alert:
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent = False
+                is_rule = False
             )
     
     def test_title_is_none(self):
@@ -61,7 +61,7 @@ class Test_Alert:
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent = False
+                is_rule = False
             )
     
     def test_title_is_not_str(self):
@@ -73,7 +73,7 @@ class Test_Alert:
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent = False
+                is_rule = False
             )
     
     def test_title_first_char_is_not_uppercase(self):
@@ -85,7 +85,7 @@ class Test_Alert:
                 start_date=int(time.time()), 
                 end_date=int(time.time()) + 7200000,
                 # severity=2,
-                is_permanent = False
+                is_rule = False
             )
     
     def test_description_is_none(self):
@@ -97,7 +97,7 @@ class Test_Alert:
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
                 # severity=2,
-                is_permanent = False
+                is_rule = False
             )
     
     def test_description_is_not_str(self):
@@ -109,7 +109,7 @@ class Test_Alert:
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
                 # severity=2,
-                is_permanent = False
+                is_rule = False
             )   
     
     def test_dates_are_not_ints(self):
@@ -121,7 +121,7 @@ class Test_Alert:
                 start_date="hoje",
                 end_date="amanha",
                 # severity=2,
-                is_permanent = False
+                is_rule = False
             )
             
     def test_start_date_greater_than_end_date(self):
@@ -134,7 +134,7 @@ class Test_Alert:
                 start_date=now + 7200000,
                 end_date=now,
                 # severity=2,
-                is_permanent = False
+                is_rule = False
             )
     
     # def test_severity_is_none(self):
@@ -163,7 +163,7 @@ class Test_Alert:
     #             is_permanent = False
     #         )
             
-    def test_is_permanent_not_bool(self):
+    def test_is_rule_not_bool(self):
         with pytest.raises(EntityError):
             Alert(
                 alert_id=str(uuid.uuid4()), 
@@ -172,10 +172,10 @@ class Test_Alert:
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
                 # severity=1,
-                is_permanent = "False"
+                is_rule = "False"
             )
             
-    def test_is_permanent_is_not_none(self):
+    def test_is_rule_is_not_none(self):
         with pytest.raises(EntityError):
             Alert(
                 alert_id=str(uuid.uuid4()), 
@@ -184,7 +184,7 @@ class Test_Alert:
                 start_date=int(time.time()),
                 end_date=int(time.time()) + 7200000,
                 # severity=1,
-                is_permanent = None
+                is_rule = None
             )
     
 

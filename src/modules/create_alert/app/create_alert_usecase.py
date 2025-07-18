@@ -10,7 +10,7 @@ class CreateAlertUsecase:
 
     def __call__(self, title: str, description: str, start_date: int, end_date: int, 
                 # severity: int,
-                is_permanent: bool) -> Alert:
+                is_rule: bool) -> Alert:
         
         print("Entered usecase")
 
@@ -26,7 +26,7 @@ class CreateAlertUsecase:
             start_date=start_date,
             end_date=end_date,
             # severity=severity
-            is_permanent=is_permanent
+            is_rule=is_rule
         )
 
         created_alert = self.repo.create_alert(alert=new_alert)

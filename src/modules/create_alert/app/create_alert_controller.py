@@ -21,7 +21,7 @@ class CreateAlertController:
             start_date = request.data.get("start_date", None)
             end_date = request.data.get("end_date", None)
             # severity = request.data.get("severity", None)
-            is_permanent = request.data.get("is_permanent", None)
+            is_rule = request.data.get("is_rule", None)
             
             #must do some more validaitions, this is only for testing if event bridge client is working correctly
 
@@ -33,7 +33,7 @@ class CreateAlertController:
                 start_date=start_date,
                 end_date=end_date,
                 # severity=severity,
-                is_permanent=is_permanent
+                is_rule=is_rule
             )
 
             viewmodel = CreateAlertViewmodel(alert=alert)

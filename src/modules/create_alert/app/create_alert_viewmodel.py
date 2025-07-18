@@ -8,7 +8,7 @@ class CreateAlertViewmodel:
     start_date: int     #required
     end_date: int       #required
     # severity: int       #required
-    is_permanent: bool  #required
+    is_rule: bool  #required
     
     def __init__(self, alert: Alert):
         self.alert_id = alert.alert_id
@@ -16,7 +16,7 @@ class CreateAlertViewmodel:
         self.description = alert.description
         self.start_date = alert.start_date
         # self.severity = alert.severity
-        self.is_permanent = alert.is_permanent
+        self.is_rule = alert.is_rule
         
     def to_dict(self):
         
@@ -28,7 +28,7 @@ class CreateAlertViewmodel:
                 "start_date": self.start_date,
                 "end_date": self.end_date,
                 # "self.severity": self.severity,
-                "is_permanent": self.is_permanent
+                "is_rule": self.is_rule
             },
             "Message": "The alert was created successfully"
         }

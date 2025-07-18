@@ -18,7 +18,7 @@ class AlertRepositoryMock(IAlertRepository):
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent=True
+                is_rule=True
             ),
             Alert (
                 alert_id=str(uuid.uuid4()), 
@@ -27,7 +27,7 @@ class AlertRepositoryMock(IAlertRepository):
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent=False
+                is_rule=False
             )
         ]
         

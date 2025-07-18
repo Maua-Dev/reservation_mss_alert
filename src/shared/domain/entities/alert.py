@@ -9,7 +9,7 @@ class Alert(abc.ABC):
     start_date: int     #required
     end_date: int       #required
     # severity: int       #required
-    is_permanent: bool  #required
+    is_rule: bool       #required implies on beeign permanent (not needing a cron to delete)
     
     def __init__(self, 
                  alert_id: str, 
@@ -18,7 +18,7 @@ class Alert(abc.ABC):
                  start_date: int, 
                  end_date: int, 
                 #  severity: int,
-                 is_permanent: bool):
+                 is_rule: bool):
         
         if not Alert.validate_alert_id(alert_id):
             raise EntityError("alert_id")
@@ -48,9 +48,9 @@ class Alert(abc.ABC):
         #     raise EntityError("severity")
         # self.severity = severity
         
-        if not Alert.validate_is_permanent(is_permanent):
-            raise EntityError("is_permanent")
-        self.is_permanent = is_permanent
+        if not Alert.validate_is_rule(is_rule):
+            raise EntityError("is_rule")
+        self.is_rule = is_rule
     
     
     #Lógica das validações:
@@ -113,10 +113,10 @@ class Alert(abc.ABC):
     #     return True
     
     @staticmethod
-    def validate_is_permanent(is_permanent: bool) -> bool:
-        if is_permanent is None:
+    def validate_is_rule(is_rule: bool) -> bool:
+        if is_rule is None:
             return False
-        if not isinstance(is_permanent, bool):
+        if not isinstance(is_rule, bool):
             return False
         return True
     

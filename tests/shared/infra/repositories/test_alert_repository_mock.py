@@ -18,7 +18,7 @@ class TestAlertRepositoryMock():
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent=True
+                is_rule=True
             )
         
         repo.create_alert(new_alert)
