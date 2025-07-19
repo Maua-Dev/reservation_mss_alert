@@ -47,11 +47,10 @@ class Alert(abc.ABC):
         # if not Alert.validate_severity(severity):
         #     raise EntityError("severity")
         # self.severity = severity
-        
+
         if not Alert.validate_is_rule(is_rule):
             raise EntityError("is_rule")
-        self.is_rule = is_rule
-    
+        self.is_rule = is_rule    
     
     #Lógica das validações:
     

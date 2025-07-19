@@ -146,7 +146,7 @@ class Test_Alert:
     #             start_date=int(time.time()),
     #             end_date=int(time.time()) + 7200000,
     #             severity=None,
-    #             is_permanent = False
+    #             is_rule = False
     #         )
      
     #krl muito interessante eu nao conhecia esse mark.parametrize!!!!! pika
@@ -160,7 +160,7 @@ class Test_Alert:
     #             start_date=int(time.time()),
     #             end_date=int(time.time()) + 7200000,
     #             severity=severity,
-    #             is_permanent = False
+    #             is_rule = False
     #         )
             
     def test_is_rule_not_bool(self):
