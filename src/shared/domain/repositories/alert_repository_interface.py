@@ -34,6 +34,3 @@ class IAlertRepository(ABC):
         If alert not found raise NoItemsFound
         """
         pass
-
-
-

@@ -4,7 +4,6 @@ import uuid
 import time
 
 class TestAlertRepositoryMock():
-
     def test_create_alert(self):
         
         repo = AlertRepositoryMock()
@@ -18,7 +17,7 @@ class TestAlertRepositoryMock():
                 start_date = int(time.time()), 
                 end_date =  int(time.time()) + 7200000, 
                 # severity = 2,
-                is_permanent=True
+                is_rule=True
             )
         
         repo.create_alert(new_alert)
@@ -38,7 +37,7 @@ class TestAlertRepositoryMock():
         assert test_alert.description == "quadra molhada por conta da chuva"
         assert test_alert.start_date == repo.alerts[0].start_date
         assert test_alert.end_date == repo.alerts[0].end_date
-        assert test_alert.is_permanent == True
+        assert test_alert.is_rule == True
         
     def test_get_all_alerts(self):
         repo = AlertRepositoryMock()
@@ -64,8 +63,9 @@ class TestAlertRepositoryMock():
                           new_description = "falta de material esportivo",
                           new_start_date = time.time()+7200,
                           new_end_date=time.time()+14400,
-                          new_is_permanent=False
+                          new_is_rule=False
                           )
         test_alert = repo.get_alert(test_alert_id)
         
         assert test_alert == updated_alert       
+        assert new_alert.title == repo.alerts[-1].title
