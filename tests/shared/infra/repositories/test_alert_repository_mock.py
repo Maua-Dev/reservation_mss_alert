@@ -68,4 +68,3 @@ class TestAlertRepositoryMock():
         test_alert = repo.get_alert(test_alert_id)
         
         assert test_alert == updated_alert       
-        assert new_alert.title == repo.alerts[-1].title

@@ -57,7 +57,7 @@ class AlertRepositoryMock(IAlertRepository):
                      new_description: str, 
                      new_start_date: int, 
                      new_end_date: int, 
-                     new_is_permanent: bool) -> Alert:
+                     new_is_rule: bool) -> Alert:
         
         for alert in self.alerts:
             if alert.alert_id == alert_id:
@@ -65,7 +65,7 @@ class AlertRepositoryMock(IAlertRepository):
                 alert.description = new_description
                 alert.start_date = new_start_date
                 alert.end_date = new_end_date
-                alert.is_permanent = new_is_permanent
+                alert.is_rule = new_is_rule
                 
                 return alert
             

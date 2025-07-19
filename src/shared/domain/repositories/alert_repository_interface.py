@@ -11,25 +11,33 @@ class IAlertRepository(ABC):
         pass
     
     @abstractmethod
-    def get_alert(self, alert: Alert) -> Alert:
+    def get_alert(self, alert_id: str) -> Alert:
         """
         If alert not found raise NoItemsFound
         """
         pass
     
     @abstractmethod
-    def get_all_alerts(self, alert: Alert) -> Alert:
+    def get_all_alerts(self) -> Alert:
         pass
     
     @abstractmethod
-    def delete_alert(self, alert: Alert) -> Alert:
+    def delete_alert(self, alert_id: str) -> Alert:
         """
         If alert not found raise NoItemsFound
         """
         pass
     
     @abstractmethod
-    def update_alert(self, alert: Alert) -> Alert:
+    def update_alert(
+            self,
+            alert_id: str, 
+            new_title: str, 
+            new_description: str, 
+            new_start_date: int, 
+            new_end_date: int, 
+            new_is_rule: bool
+        ) -> Alert:
         """
         If alert not found raise NoItemsFound
         """
