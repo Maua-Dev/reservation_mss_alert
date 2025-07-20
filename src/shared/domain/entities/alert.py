@@ -119,7 +119,32 @@ class Alert(abc.ABC):
             return False
         return True
     
-   
+    def to_dict(self):
+        
+        return {
+            "alert": {
+                "alert_id": self.alert_id,
+                "title": self.title,
+                "description": self.description,
+                "start_date": self.start_date,
+                "end_date": self.end_date,
+                # "severity": self.severity,
+                "is_rule": self.is_rule
+            }
+        }
+    
+    def __eq__(self, other):
+        
+        if not isinstance(other, Alert):
+            return False
+
+        return (self.alert_id == other.alert_id and
+                self.title == other.title and
+                self.description == other.description and
+                self.start_date == other.start_date and
+                self.end_date == other.end_date and
+                # self.severity == other.severity and
+                self.is_rule == other.is_rule)
         
         
         
