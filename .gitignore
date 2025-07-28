@@ -137,3 +137,4 @@ dmypy.json
 iac/local/docker/dynamodb/shared-local-instance.d
 
 .DS_Store
+.venv/
