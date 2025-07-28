@@ -8,7 +8,7 @@ from src.shared.environments import Environments
 
 
 def setup_dynamo_table():
-    dynamo_table_name = "user_mss_template-table"
+    dynamo_table_name = "reservation-mss-alert-table"
     endpoint_url = "http://localhost:8000"
     print("Setting up DynamoDB table...")
 
@@ -62,7 +62,7 @@ def setup_dynamo_table():
             }
         )
 
-        print('Table "user_mss_template-table" created!')
+        print('Table "reservation-mss-alert-table" created!')
 
     else:
         print("Table already exists!")
