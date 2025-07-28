@@ -25,6 +25,7 @@ class UserRepositoryDynamo(IUserRepository):
                                        region=Environments.get_envs().region,
                                        partition_key=Environments.get_envs().dynamo_partition_key,
                                        sort_key=Environments.get_envs().dynamo_sort_key)
+        
     def get_user(self, user_id: int) -> User:
         resp = self.dynamo.get_item(partition_key=self.partition_key_format(user_id), sort_key=self.sort_key_format(user_id))
 
