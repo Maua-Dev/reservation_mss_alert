@@ -22,8 +22,38 @@ class CreateAlertController:
             end_date = request.data.get("end_date", None)
             # severity = request.data.get("severity", None)
             is_rule = request.data.get("is_rule", None)
+                        
+            if title is None:
+                raise MissingParameters("title")
+            if description is None:
+                raise MissingParameters("description")
+            if start_date is None:
+                raise MissingParameters("start_date")
+            if end_date is None:
+                raise MissingParameters("end_date")
+            if is_rule is None:
+                raise MissingParameters("is_rule")
             
-            #must do some more validaitions, this is only for testing if event bridge client is working correctly
+            if not isinstance(title, str):
+                raise WrongTypeParameter(fieldName="title",
+                                         fieldTypeExpected="string",
+                                         fieldTypeReceived=type(title).__name__())
+            if not isinstance(description, str):
+                raise WrongTypeParameter(fieldName="description",
+                                         fieldTypeExpected="string",
+                                         fieldTypeReceived=type(description).__name__())
+            if not isinstance(start_date, int):
+                raise WrongTypeParameter(fieldName="start_date",
+                                         fieldTypeExpected="int",
+                                         fieldTypeReceived=type(start_date).__name__())
+            if not isinstance(end_date, int):
+                raise WrongTypeParameter(fieldName="end_date",
+                                         fieldTypeExpected="int",
+                                         fieldTypeReceived=type(end_date).__name__())
+            if not isinstance(is_rule, bool):
+                raise WrongTypeParameter(fieldName="is_rule",
+                                         fieldTypeExpected="bool",
+                                         fieldTypeReceived=type(is_rule).__name__())
 
             print("End controller")
 

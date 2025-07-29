@@ -5,6 +5,6 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 
 def lambda_handler(event, context):
     httpRequest = LambdaHttpRequest(data=event)
-    httpResponse = LambdaHttpResponse(status_code=200, body={"message": "salve ben10 rl zona norte"}, headers={})
+    httpResponse = LambdaHttpResponse(status_code=200, body={"message": f"salve ben10 rl zona norte{str(httpRequest.body)}"}, headers={})
 
     return httpResponse.toDict()

@@ -3,6 +3,7 @@ from src.shared.environments import Environments
 import uuid
 from datetime import datetime, timezone
 from botocore.exceptions import ClientError
+import json
 
 class EventBridgeClient:
     
@@ -25,7 +26,7 @@ class EventBridgeClient:
         else:
             self.eventbridge = boto3.client("events")
             
-    def create_trigger_for_deletion(self, expire: int) -> str:
+    def create_trigger_for_deletion(self, alert_id: str ,expire: int) -> str:
         
         # 1. Validate the timestamp first to fail fast
         try:
@@ -36,7 +37,7 @@ class EventBridgeClient:
             # Catches invalid timestamps or non-numeric input
             raise ValueError(f"Invalid 'expire' timestamp provided: {e}")
 
-        rule_name = f"one-time-trigger-{uuid.uuid4()}"
+        rule_name = f"one-time-trigger-for-alert-{uuid.uuid4()}"
         cron_expr = f"cron({dt.minute} {dt.hour} {dt.day} {dt.month} ? {dt.year})"
         
         # 2. Try to create the EventBridge rule
@@ -45,7 +46,8 @@ class EventBridgeClient:
             self.eventbridge.put_rule(
                 Name=rule_name,
                 ScheduleExpression=cron_expr,
-                State="ENABLED"
+                State="ENABLED",
+                Description="Rule for deleting a created alert after certain time in the reservation mss alert. This rule triggers a delete alert lambda function"
             )
             print(f"Successfully created rule: {rule_name}")
         
@@ -57,12 +59,20 @@ class EventBridgeClient:
         # 3. Try to add the target to the rule
         try:
             print(f"Attempting to set target for rule: {rule_name}")
+            
+            lambda_payload = json.dumps({
+                "body": {
+                    "alert_id": alert_id 
+                }
+            })
+            
             self.eventbridge.put_targets(
                 Rule=rule_name,
                 Targets=[
                     {
                         "Id": "DeleteAlertLambdaTarget",
                         "Arn": self.delete_alert_lambda_arn,
+                        "Input": lambda_payload
                     }
                 ]
             )
