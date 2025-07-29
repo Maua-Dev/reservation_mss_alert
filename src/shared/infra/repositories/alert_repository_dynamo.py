@@ -10,11 +10,11 @@ from src.shared.infra.external.dynamo.datasources.dynamo_datasource import Dynam
 class AlertRepositoryDynamo(IAlertRepository):
     
     @staticmethod
-    def partition_key_format(alert_id) -> str:
-        return f"user#{alert_id}"
+    def partition_key_format(alert_id: str) -> str:
+        return f"alert#{alert_id}"
 
     @staticmethod
-    def sort_key_format(alert_id: int) -> str:
+    def sort_key_format(alert_id: str) -> str:
         return f"#{alert_id}"
     
     def __init__(self):
@@ -47,13 +47,11 @@ class AlertRepositoryDynamo(IAlertRepository):
         return alerts
     
     def create_alert(self, new_alert:Alert) -> Alert:
-        print(f"repo entered.\n Repo:{self}")
-        print(self.dynamo.dynamo_table.__dict__)
-        print(f"nre user id: {new_alert.alert_id}")
-        alert_DTO = AlertDynamoDTO.from_entity(new_alert).to_dynamo
+        
+        alert_DTO = AlertDynamoDTO.from_entity(new_alert).to_dynamo()
         resp = self.dynamo.put_item(item=alert_DTO,
-                                    partition_key = self.partition_key_format(alert_id = alert_DTO.alert_id),
-                                    sort_key = self.sort_key_format(alert_id = alert_DTO.alert_id))
+                                    partition_key = self.partition_key_format(alert_id = new_alert.alert_id),
+                                    sort_key = self.sort_key_format(alert_id = new_alert.alert_id))
         
         return new_alert
     

@@ -42,8 +42,8 @@ class AlertDynamoDTO:
             "alert_id":self.alert_id,
             "title":self.title,
             "description":self.description,
-            "start_date":Decimal(self.start_date),
-            "end_date":Decimal(self.end_date),
+            "start_date":self.start_date,
+            "end_date":self.end_date,
             "is_rule":self.is_rule
         }
         

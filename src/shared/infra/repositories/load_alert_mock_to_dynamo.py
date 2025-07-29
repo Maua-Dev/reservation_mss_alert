@@ -106,7 +106,11 @@ def load_mock_to_real_dynamo():
     print('Loading mock data to dynamo...')
     for alert in mock_repo.alerts:
         print(f"Loading alert {alert.alert_id} | {alert.title} to dynamo")
-        dynamo_repo.create_user(alert)
+        dynamo_repo.create_alert(alert)
         count += 1
 
     print(f"{count} alerts loaded to dynamo!")
+    
+if __name__ == '__main__':
+    dotenv.load_dotenv()
+    load_mock_to_local_dynamo()
