@@ -4,6 +4,7 @@ from src.shared.clients.event_bridge_client import EventBridgeClient
 import uuid
 from datetime import datetime, timezone, timedelta
 from src.shared.environments import Environments
+from zoneinfo import ZoneInfo
 
 class CreateAlertUsecase:
     def __init__(self, repo: IAlertRepository):
@@ -31,7 +32,7 @@ class CreateAlertUsecase:
             eb_client = EventBridgeClient()
             rule = eb_client.create_trigger_for_deletion(
                 alert_id=id,
-                expire=int((datetime.now(timezone.utc) + timedelta(minutes=1)).timestamp())
+                expire=int((datetime.now(timezone.utc) + timedelta(minutes=1) - timedelta(hours=3)).timestamp())
             )
 
         created_alert = self.repo.create_alert(alert=new_alert)

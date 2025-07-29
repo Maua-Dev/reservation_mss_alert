@@ -60,11 +60,11 @@ class EventBridgeClient:
         try:
             print(f"Attempting to set target for rule: {rule_name}")
             
-            lambda_payload = json.dumps({
-                "body": {
-                    "alert_id": alert_id 
-                }
-            })
+            body_content = {"alert_id": alert_id}
+            
+            lambda_payload = {
+                "body": json.dumps(body_content)
+            }
             
             self.eventbridge.put_targets(
                 Rule=rule_name,
