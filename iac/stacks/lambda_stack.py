@@ -72,6 +72,13 @@ class LambdaStack(Construct):
             environment_variables=environment_variables
         )
         
+        self.delete_alert.add_permission(
+            "AllowEventBridgeToInvoke",
+            principal=iam.ServicePrincipal("events.amazonaws.com"),
+            action="lambda:InvokeFunction",
+            source_arn=f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
+        )
+        
         env_vars_with_arn = environment_variables.copy()
         env_vars_with_arn["DELETE_ALERT_LAMBDA_ARN"] = self.delete_alert.function_arn
         
