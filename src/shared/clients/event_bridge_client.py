@@ -31,8 +31,8 @@ class EventBridgeClient:
         # 1. Validate the timestamp first to fail fast
         try:
             dt = datetime.fromtimestamp(expire, tz=timezone.utc)
-            if dt <= datetime.now(timezone.utc):
-                raise ValueError("Timestamp 'expire' must be in the future.")
+            # if dt <= datetime.now(timezone.utc):
+            #     raise ValueError("Timestamp 'expire' must be in the future.")
         except (ValueError, TypeError) as e:
             # Catches invalid timestamps or non-numeric input
             raise ValueError(f"Invalid 'expire' timestamp provided: {e}")
@@ -66,13 +66,15 @@ class EventBridgeClient:
                 "body": json.dumps(body_content)
             }
             
+            input_payload = json.dumps(lambda_payload)
+            
             self.eventbridge.put_targets(
                 Rule=rule_name,
                 Targets=[
                     {
                         "Id": "DeleteAlertLambdaTarget",
                         "Arn": self.delete_alert_lambda_arn,
-                        "Input": lambda_payload
+                        "Input": input_payload
                     }
                 ]
             )
