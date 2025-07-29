@@ -32,7 +32,7 @@ class CreateAlertUsecase:
             eb_client = EventBridgeClient()
             rule = eb_client.create_trigger_for_deletion(
                 alert_id=id,
-                expire=int((datetime.now(timezone.utc) + timedelta(minutes=2)).timestamp())
+                expire=end_date
             )
 
         created_alert = self.repo.create_alert(alert=new_alert)

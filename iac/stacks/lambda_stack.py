@@ -90,22 +90,17 @@ class LambdaStack(Construct):
         )
         
         event_bridge_policy = iam.PolicyStatement(
-        effect=iam.Effect.ALLOW,
-        actions=[
-            "events:PutRule",
-            "events:PutTargets",
-            "events:DeleteRule"
-        ],
-        resources=[
-            f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
-        ]
+            effect=iam.Effect.ALLOW,
+            actions=[
+                "events:PutRule",
+                "events:PutTargets",
+                "events:DeleteRule"
+            ],
+            resources=[
+                f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
+            ]
         )
     
         self.create_alert.add_to_role_policy(event_bridge_policy)
         
         self.functions_that_need_dynamo_permissions = []
-        
-        CfnOutput(self, "DeleteAlertLambdaArn",
-            value=env_vars_with_arn.get("DELETE_ALERT_LAMBDA_ARN", "not found"),
-            description="ARN of the Delete Alert Lambda function"
-        )
