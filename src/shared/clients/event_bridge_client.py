@@ -95,3 +95,5 @@ class EventBridgeClient:
             raise Exception(f"Could not set target for EventBridge rule: {e}")
         
         return rule_name
+    
+    #TODO make a delete_rule method that takes in a alert_id and deletes the rule based in this ID
