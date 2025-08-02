@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List, Dict
+from typing import List, Dict, Optional
 from src.shared.domain.entities.alert import Alert
 from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
 from src.shared.environments import Environments
@@ -65,24 +65,35 @@ class AlertRepositoryDynamo(IAlertRepository):
 
         return AlertDynamoDTO.from_dynamo(resp['Attributes']).to_entity()
     
-    def update_alert(self, alert_id, new_title, new_description, new_start_date, new_end_date, new_is_rule) -> Alert:
-        alert_to_update = self.get_alert(alert_id=alert_id)
+    def update_alert(self, 
+                     alert_id: str,
+                     new_title: Optional[str] = None, 
+                     new_description: Optional[str] = None, 
+                     new_start_date: Optional[int] = None, 
+                     new_end_date: Optional[int] = None,
+                     new_is_rule: Optional[bool] = None) -> Alert:
         
-        item_to_update = {"new_title":new_title, "new_description":new_description, "new_start_date" : new_start_date, "new_end_date":new_end_date, "new_is_rule":new_is_rule}
         item_to_update_dict = {}
-        count = 0
         
-        for items in item_to_update:
-            if item_to_update[items]:
-                item_to_update_dict.update({items:item_to_update[items]})
-            count +=1
-            
-        if count == len(item_to_update) and item_to_update_dict == {}:
-            raise NoItemsFound("Nothing to update")
+        if new_title is not None:
+            item_to_update_dict["title"] = new_title 
+        if new_description is not None:
+            item_to_update_dict["description"] = new_description
+        if new_start_date is not None:
+            item_to_update_dict["start_date"] = new_start_date
+        if new_end_date is not None:
+            item_to_update_dict["end_date"] = new_end_date
+        if new_is_rule is not None: 
+            item_to_update_dict["is_rule"] = new_is_rule
         
-        resp = self.dynamo.update_item(partition_key=self.partition_key_format(alert_id), 
-                                       sort_key=self.sort_key_format(alert_id),
-                                       update_dict=item_to_update_dict)
+        if not item_to_update_dict:
+            raise ValueError("No update parameters provided.") 
+        
+        resp = self.dynamo.update_item(
+            partition_key=self.partition_key_format(alert_id), 
+            sort_key=self.sort_key_format(alert_id),
+            update_dict=item_to_update_dict 
+        )
         
         return AlertDynamoDTO.from_dynamo(resp['Attributes']).to_entity()     
         
