@@ -32,7 +32,7 @@ class AlertRepositoryDynamo(IAlertRepository):
         
         alert_dto = AlertDynamoDTO.from_dynamo(resp["Item"])
         
-        return alert_dto.to_entity
+        return alert_dto.to_entity()
     
     def get_all_alerts(self, alert_id: str) -> List[Alert]:
         resp = self.dynamo.get_item(partition_key=self.partition_key_format(alert_id= alert_id), sort_key=self.sort_key_format(alert_id=alert_id))
