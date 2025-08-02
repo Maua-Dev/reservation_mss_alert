@@ -34,15 +34,17 @@ class AlertRepositoryDynamo(IAlertRepository):
         
         return alert_dto.to_entity()
     
-    def get_all_alerts(self, alert_id: str) -> List[Alert]:
-        resp = self.dynamo.get_item(partition_key=self.partition_key_format(alert_id= alert_id), sort_key=self.sort_key_format(alert_id=alert_id))
+    def get_all_alerts(self) -> List[Alert]:
+        resp = self.dynamo.get_all_items()
         alerts = []
         
         for item in resp["Items"]:
-            if item.get('Item') == None:
-                raise NoItemsFound("Alert_id")
             
-            alerts.append(AlertDynamoDTO.from_dynamo(item["Item"]))
+            alert_dto = AlertDynamoDTO.from_dynamo(item)
+            alerts.append(alert_dto.to_entity())
+            
+        if len(alerts) == 0:
+            raise NoItemsFound("Alerts")
         
         return alerts
     
