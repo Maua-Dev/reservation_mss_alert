@@ -2,13 +2,13 @@ from decimal import Decimal
 
 import boto3
 import dotenv
-from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
-from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+from src.shared.infra.repositories.alert_repository_dynamo import AlertRepositoryDynamo
+from src.shared.infra.repositories.alert_repository_mock import AlertRepositoryMock
 from src.shared.environments import Environments
 
 
 def setup_dynamo_table():
-    dynamo_table_name = "user_mss_template-table"
+    dynamo_table_name = "reservation-mss-alert-table"
     endpoint_url = "http://localhost:8000"
     print("Setting up DynamoDB table...")
 
@@ -62,7 +62,7 @@ def setup_dynamo_table():
             }
         )
 
-        print('Table "user_mss_template-table" created!')
+        print('Table "reservation-mss-alert-table" created!')
 
     else:
         print("Table already exists!")
@@ -70,22 +70,23 @@ def setup_dynamo_table():
 
 def load_mock_to_local_dynamo():
     setup_dynamo_table()
-    mock_repo = UserRepositoryMock()
-    dynamo_repo = UserRepositoryDynamo()
+    mock_repo = AlertRepositoryMock()
+    dynamo_repo = AlertRepositoryDynamo()
 
     count = 0
 
     print('Loading mock data to dynamo...')
-    for user in mock_repo.users:
-        print(f"Loading user {user.user_id} | {user.name} to dynamo")
-        dynamo_repo.create_user(user)
+    for alert in mock_repo.alerts:
+        print(f"Loading user {alert.alert_id} | {alert.title} to dynamo")
+        dynamo_repo.create_alert(alert)
         count += 1
 
     print(f"{count} users loaded to dynamo!")
+    
 
 def load_mock_to_real_dynamo():
-    mock_repo = UserRepositoryMock()
-    dynamo_repo = UserRepositoryDynamo()
+    mock_repo = AlertRepositoryMock()
+    dynamo_repo = AlertRepositoryDynamo()
 
     count = 0
 
@@ -103,12 +104,12 @@ def load_mock_to_real_dynamo():
     )
 
     print('Loading mock data to dynamo...')
-    for user in mock_repo.users:
-        print(f"Loading user {user.user_id} | {user.name} to dynamo")
-        dynamo_repo.create_user(user)
+    for alert in mock_repo.alerts:
+        print(f"Loading alert {alert.alert_id} | {alert.title} to dynamo")
+        dynamo_repo.create_alert(alert)
         count += 1
 
-    print(f"{count} users loaded to dynamo!")
+    print(f"{count} alerts loaded to dynamo!")
     
 if __name__ == '__main__':
     dotenv.load_dotenv()
