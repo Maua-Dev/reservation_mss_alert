@@ -28,7 +28,6 @@ class Test_AlertRepositoryDynamo:
         resp = alert_repository.get_alert(alert_test.alert_id)
         
         assert resp.alert_id == alert_test.alert_id
-        pass
     
     @pytest.mark.skip(reason="Needs dynamoDB")    
     def test_get_all_alerts(self):
