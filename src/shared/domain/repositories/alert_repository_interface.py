@@ -7,7 +7,7 @@ from src.shared.domain.entities.alert import Alert
 class IAlertRepository(ABC):
 
     @abstractmethod
-    def create_alert(self, alert: Alert) -> Alert:
+    def create_alert(self, new_alert: Alert) -> Alert:
         pass
     
     @abstractmethod

@@ -35,6 +35,6 @@ class CreateAlertUsecase:
                 expire=end_date
             )
 
-        created_alert = self.repo.create_alert(alert=new_alert)
+        created_alert = self.repo.create_alert(new_alert=new_alert)
 
         return created_alert
