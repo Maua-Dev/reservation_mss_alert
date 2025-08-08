@@ -32,9 +32,9 @@ class AlertRepositoryMock(IAlertRepository):
             )
         ]
         
-    def create_alert(self, alert: Alert) -> Alert:
-        self.alerts.append(alert)
-        return alert
+    def create_alert(self, new_alert: Alert) -> Alert:
+        self.alerts.append(new_alert)
+        return new_alert
     
     def get_alert(self, alert_id: str) -> Alert:     
         for alert in self.alerts:
