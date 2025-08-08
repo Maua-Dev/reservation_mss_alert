@@ -26,6 +26,35 @@ class EventBridgeClient:
         else:
             self.eventbridge = boto3.client("events")
             
+    def delete_trigger(self, rule_name: str) -> str:
+        """
+        Deleta uma regra do EventBridge e seus alvos associados com base no nome da regra.
+        """
+        try:
+            
+            print(f"Attempting to delete rule: {rule_name}")
+            
+            self.eventbridge.remove_targets(
+                Rule = rule_name,
+                Ids=["DeleteAlertLambdaTarget"]
+            )
+            
+            print(f"Successfully removed targets from rule: {rule_name}")
+            
+            self.eventbridge.delete_rule(Name=rule_name)
+            
+            print(f"Successfully deleted rule: {rule_name}")
+            
+        except ClientError as e:
+
+            if e.response['Error']['Code'] == 'ResourceNotFoundException':
+                print(f"Rule '{rule_name}' not found. It may have been already deleted.")
+            else:
+                print(f"ERROR: Failed to delete rule '{rule_name}'. Reason: {e.response['Error']['Message']}")
+                raise e
+        
+        
+            
     def create_trigger_for_deletion(self, alert_id: str ,expire: int) -> str:
         
         # 1. Validate the timestamp first to fail fast
@@ -37,7 +66,7 @@ class EventBridgeClient:
             # Catches invalid timestamps or non-numeric input
             raise ValueError(f"Invalid 'expire' timestamp provided: {e}")
 
-        rule_name = f"one-time-trigger-for-alert-{uuid.uuid4()}"
+        rule_name = f"one-time-trigger-for-alert-{alert_id}"
         cron_expr = f"cron({dt.minute} {dt.hour} {dt.day} {dt.month} ? {dt.year})"
         
         # 2. Try to create the EventBridge rule
