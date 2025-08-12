@@ -23,13 +23,14 @@ class DeleteAlertUsecase():
             
             try:
                 
-                EventBridgeClient.delete_trigger(rule_name=rule_name)
+                eb_client = EventBridgeClient()
+
+                rule = eb_client.delete_trigger(rule_name=rule_name)
                 
-            except:
-                
-                #TODO Melhorar esse erro, criar algo no errors como: EventBridgeDeleteTriggerErorr
-                raise Exception
-        
+            except Exception as e:
+                # Relança a exceção com uma mensagem clara
+                raise Exception(f"Falha ao deletar o gatilho no EventBridge para a regra {rule_name}. Erro original: {e}")
+
         deletet_alert = self.repo.delete_alert(alert_id=alert_id)
         
         return deletet_alert

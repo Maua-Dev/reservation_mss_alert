@@ -94,7 +94,8 @@ class LambdaStack(Construct):
             actions=[
                 "events:PutRule",
                 "events:PutTargets",
-                "events:DeleteRule"
+                "events:DeleteRule",
+                "events:RemoveTargets"
             ],
             resources=[
                 f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
@@ -102,5 +103,6 @@ class LambdaStack(Construct):
         )
     
         self.create_alert.add_to_role_policy(event_bridge_policy)
+        self.delete_alert.add_to_role_policy(event_bridge_policy)
         
         self.functions_that_need_dynamo_permissions = [self.create_alert, self.delete_alert]

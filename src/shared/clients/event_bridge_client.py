@@ -45,6 +45,8 @@ class EventBridgeClient:
             
             print(f"Successfully deleted rule: {rule_name}")
             
+            return rule_name
+            
         except ClientError as e:
 
             if e.response['Error']['Code'] == 'ResourceNotFoundException':

@@ -37,4 +37,4 @@ class DeleteAlertController():
             
         except Exception as err:
             
-            return InternalServerError(body=err.message)
+            return InternalServerError(body=err.args[0])
