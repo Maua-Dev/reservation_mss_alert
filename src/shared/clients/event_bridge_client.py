@@ -19,7 +19,7 @@ class EventBridgeClient:
             self.eventbridge = boto3.client(
                 "events",
                 aws_access_key_id=self.__envs.client_id,
-                aws_secret_access_key=self.__envs.client_secret, # Note: Corrected parameter name
+                aws_secret_access_key=self.__envs.client_secret,
                 endpoint_url=self.__envs.endpoint_url,
                 region_name=self.__envs.region,
             )
@@ -52,8 +52,6 @@ class EventBridgeClient:
             else:
                 print(f"ERROR: Failed to delete rule '{rule_name}'. Reason: {e.response['Error']['Message']}")
                 raise e
-        
-        
             
     def create_trigger_for_deletion(self, alert_id: str ,expire: int) -> str:
         
