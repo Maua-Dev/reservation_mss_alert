@@ -25,9 +25,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Determine AWS Account ID
+      - name: Set AWS Account ID
         run: |
-            echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}" >> $GITHUB_ENV
+          if [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "homolog" ]]; then
+            echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_HOMOLOG }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "prod" ]]; then
+            echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+          else
+            echo "Invalid branch name!" && exit 1
+          fi
 
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
