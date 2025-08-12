@@ -52,7 +52,6 @@ class EventBridgeClient:
             else:
                 print(f"ERROR: Failed to delete rule '{rule_name}'. Reason: {e.response['Error']['Message']}")
                 raise e
-        
             
     def create_trigger_for_deletion(self, alert_id: str ,expire: int) -> str:
         
