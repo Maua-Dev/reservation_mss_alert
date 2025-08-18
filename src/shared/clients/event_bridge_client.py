@@ -59,7 +59,7 @@ class EventBridgeClient:
         
         # 1. Validate the timestamp first to fail fast
         try:
-            dt = datetime.fromtimestamp(expire, tz=timezone.utc)
+            dt = datetime.fromtimestamp(expire / 1000, tz=timezone.utc) # turn the time stamp to miliseconds
             if dt <= datetime.now(timezone.utc):
                 raise ValueError("Timestamp 'expire' must be in the future.")
         except (ValueError, TypeError) as e:
