@@ -25,6 +25,51 @@ class EventBridgeClient:
             )
         else:
             self.eventbridge = boto3.client("events")
+    
+    def update_trigger_expiration(self, alert_id: str, new_expire: int) -> str:
+        """
+        Atualiza o tempo de expiração (ScheduleExpression) de uma regra existente no EventBridge.
+        """
+        # 1. Validar o novo timestamp
+        try:
+            dt = datetime.fromtimestamp(new_expire / 1000, tz=timezone.utc)
+            if dt <= datetime.now(timezone.utc):
+                raise ValueError("Timestamp 'new_expire' must be in the future.")
+        except (ValueError, TypeError) as e:
+            raise ValueError(f"Invalid 'new_expire' timestamp provided: {e}")
+
+        rule_name = f"one-time-trigger-for-alert-{alert_id}"
+        cron_expr = f"cron({dt.minute} {dt.hour} {dt.day} {dt.month} ? {dt.year})"
+        
+        try:
+            # 2. Verificar se a regra existe antes de tentar atualizar
+            # Isso garante que estamos realmente atualizando, e não criando uma nova regra por acidente.
+            print(f"Checking for existence of rule: {rule_name}")
+            self.eventbridge.describe_rule(Name=rule_name)
+            print(f"Rule found. Attempting to update schedule for: {rule_name}")
+            
+            # 3. Chamar put_rule para atualizar a regra com a nova expressão cron
+            # O EventBridge sobrescreve a configuração da regra existente com o mesmo nome.
+            self.eventbridge.put_rule(
+                Name=rule_name,
+                ScheduleExpression=cron_expr,
+                State="ENABLED",
+                Description="Rule for deleting a created alert after certain time in the reservation mss alert. This rule triggers a delete alert lambda function"
+            )
+            
+            print(f"Successfully updated schedule for rule: {rule_name}")
+            return rule_name
+
+        except ClientError as e:
+            # Trata o caso específico em que a regra não foi encontrada
+            if e.response['Error']['Code'] == 'ResourceNotFoundException':
+                print(f"ERROR: Cannot update rule '{rule_name}' because it does not exist.")
+                # Você pode optar por criar a regra aqui ou simplesmente lançar o erro
+                raise e
+            else:
+                # Trata outros erros possíveis (ex: permissões)
+                print(f"ERROR: Failed to update EventBridge rule '{rule_name}'. Reason: {e.response['Error']['Message']}")
+                raise e
             
     def delete_trigger(self, rule_name: str) -> str:
         """
