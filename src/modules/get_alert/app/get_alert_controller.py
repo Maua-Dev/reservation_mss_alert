@@ -7,7 +7,7 @@ from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
 from aws_lambda_powertools import Logger
-from uuid import uuid4
+from uuid import UUID;
 
 
 class GetAlertController:
@@ -21,14 +21,9 @@ class GetAlertController:
             if request.data.get('alert_id') is None:
                 raise MissingParameters('alert_id')
 
-            if type(request.data.get('alert_id')) != str:
-                raise WrongTypeParameter(
-                    fieldName="alert_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('alert_id').__class__.__name__
-                )
-                
-            if len(request.data.get('alert_id')) != 36 :
+            try:
+                UUID(request.data.get('alert_id'))
+            except ValueError:
                 raise EntityError("alert_id")
 
 
