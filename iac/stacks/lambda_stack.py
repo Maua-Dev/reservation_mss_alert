@@ -106,7 +106,14 @@ class LambdaStack(Construct):
             module_name="get_alert",
             method="GET",
             mss_alert_api_resource=api_gateway_resource,
-            environment_variables=env_vars_with_arn
+            environment_variables=environment_variables
+        )
+        
+        self.get_all_alerts = self.create_lambda_api_gateway_integration(
+            module_name="get_all_alerts",
+            method="GET",
+            mss_alert_api_resource=api_gateway_resource,
+            environment_variables=environment_variables
         )
     
         self.create_alert.add_to_role_policy(event_bridge_policy)
