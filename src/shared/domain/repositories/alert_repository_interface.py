@@ -18,7 +18,7 @@ class IAlertRepository(ABC):
         pass
     
     @abstractmethod
-    def get_all_alerts(self) -> Alert:
+    def get_all_alerts(self) -> List[Alert]:
         pass
     
     @abstractmethod

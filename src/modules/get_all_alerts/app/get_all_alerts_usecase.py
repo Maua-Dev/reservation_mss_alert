@@ -9,4 +9,14 @@ class GetAllAlertsUsecase:
         
     def __call__(self):
         
-        return self.repo.get_all_alerts()
+        all_alerts = self.repo.get_all_alerts()
+        
+        all_warnings = []
+        
+        for warning in all_alerts:
+            
+            if not warning.is_rule:
+                
+                all_warnings.append(warning)
+                
+        return all_warnings

@@ -28,4 +28,6 @@ class TestGetAlertController:
             request=request
         )
         
+        assert alert.status_code == 200
+        
         
