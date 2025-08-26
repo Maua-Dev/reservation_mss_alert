@@ -101,6 +101,13 @@ class LambdaStack(Construct):
                 f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
             ]
         )
+        
+        self.get_alert = self.create_lambda_api_gateway_integration(
+            module_name="get_alert",
+            method="GET",
+            mss_alert_api_resource=api_gateway_resource,
+            environment_variables=env_vars_with_arn
+        )
     
         self.create_alert.add_to_role_policy(event_bridge_policy)
         self.delete_alert.add_to_role_policy(event_bridge_policy)
