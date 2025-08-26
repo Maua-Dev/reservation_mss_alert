@@ -7,6 +7,7 @@ class GetAlertViewmodel:
     description: str
     start_date: int
     end_date: int
+    is_rule: bool
     
     def __init__(self, alert: Alert):
         self.alert_id = alert.alert_id  
@@ -14,6 +15,7 @@ class GetAlertViewmodel:
         self.description = alert.description
         self.start_date = alert.start_date
         self.end_date = alert.end_date
+        self.is_rule = alert.is_rule
 
 
     def to_dict(self):
@@ -23,5 +25,6 @@ class GetAlertViewmodel:
             'description': self.description,
             'start_date': self.start_date,
             'end_date': self.end_date,
+            'is_rule': self.is_rule,
             'message': "the alert was retrieved successfully"
         }
