@@ -24,6 +24,10 @@ class GetAllAlertsController:
         except EntityError as err:
 
             return BadRequest(body=err.message)
+        
+        except NoItemsFound as err:
+            
+            return BadRequest(body=err)
 
         except Exception as err:
 
