@@ -1,5 +1,4 @@
 from src.shared.domain.entities.alert import Alert
-from src.shared.domain.enums.state_enum import STATE
 
 
 class GetAlertViewmodel:
@@ -24,5 +23,5 @@ class GetAlertViewmodel:
             'description': self.description,
             'start_date': self.start_date,
             'end_date': self.end_date,
-            'message': "the user was retrieved successfully"
+            'message': "the alert was retrieved successfully"
         }

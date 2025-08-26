@@ -2,7 +2,6 @@ from .get_alert_controller import GetAlertController
 from .get_alert_usecase import GetAlertUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
-from src.shared.infra.external.observability.observability_aws import ObservabilityAWS
 
 observability = Environments.get_observability()(module_name="get_alert")
 

@@ -6,7 +6,6 @@ from src.shared.helpers.errors.domain_errors import EntityError, EntityParameter
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
-from aws_lambda_powertools import Logger
 from uuid import UUID;
 
 
