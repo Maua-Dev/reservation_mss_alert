@@ -115,6 +115,13 @@ class LambdaStack(Construct):
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables
         )
+        
+        self.get_all_rules = self.create_lambda_api_gateway_integration(
+            module_name="get_all_rules",
+            method="GET",
+            mss_alert_api_resource=api_gateway_resource,
+            environment_variables=environment_variables
+        )
     
         self.create_alert.add_to_role_policy(event_bridge_policy)
         self.delete_alert.add_to_role_policy(event_bridge_policy)
