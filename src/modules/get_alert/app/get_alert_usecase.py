@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 from src.shared.domain.entities.alert import Alert
 from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
 from src.shared.helpers.errors.domain_errors import EntityError
@@ -16,4 +14,4 @@ class GetAlertUseCase:
         alert = self.repo.get_alert(alert_id)
         self.observability.log_usecase_out()
         return alert
->>>>>>> f0e2a40 (Validation removed from get_alert_usecase)
+
