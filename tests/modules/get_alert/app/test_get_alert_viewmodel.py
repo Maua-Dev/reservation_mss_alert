@@ -1,7 +1,5 @@
 from src.modules.get_alert.app.get_alert_viewmodel import GetAlertViewmodel
 from src.shared.infra.repositories.alert_repository_mock import AlertRepositoryMock
-from src.shared.helpers.external_interfaces.http_models import HttpRequest
-from src.shared.environments import Environments
 
 class TestGetAlertViewModel:
     def test_get_alert_viewmodel(self):
