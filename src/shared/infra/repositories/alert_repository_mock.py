@@ -22,7 +22,7 @@ class AlertRepositoryMock(IAlertRepository):
                 is_rule=True
             ),
             Alert (
-                alert_id=str(uuid.uuid4()), 
+                alert_id="35de7377-cc37-4f65-95ea-af7cbc61e352", 
                 title = "Aviso2", 
                 description = "quadra molhada por conta da chuva", 
                 start_date = int(time.time()), 
