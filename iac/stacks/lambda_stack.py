@@ -102,6 +102,13 @@ class LambdaStack(Construct):
             ]
         )
         
+        self.get_rule = self.create_lambda_api_gateway_integration(
+            module_name="get_rule",
+            method="GET",
+            mss_alert_api_resource=api_gateway_resource,
+            environment_variables=environment_variables
+        )
+        
         self.get_alert = self.create_lambda_api_gateway_integration(
             module_name="get_alert",
             method="GET",
@@ -131,5 +138,6 @@ class LambdaStack(Construct):
             self.delete_alert,
             self.get_alert,
             self.get_all_alerts,
-            self.get_all_rules
+            self.get_all_rules,
+            self.get_rule
         ]
