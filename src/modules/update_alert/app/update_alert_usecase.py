@@ -1,6 +1,6 @@
 from src.shared.domain.entities.alert import Alert
 from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
-from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.helpers.errors.domain_errors import EntityError, EntityParameterOrderDatesError
 from src.shared.clients.event_bridge_client import EventBridgeClient
 from typing import Optional
 
@@ -17,6 +17,7 @@ class UpdateAlertUsecase:
         new_end_date: Optional[int] = None,
         new_is_rule: Optional[bool] = None) -> Alert:
         
+        alertUpdate = self.repo.get_alert(alert_id=alert_id)
         #...
 
         # LOGICA DE DETERMINAR O QUE VAI SER PASSADO COMO NOVO PARAMETRO, EX: SE O NOVO TITULO FOR DIFERENTE DE NONE,
@@ -26,20 +27,53 @@ class UpdateAlertUsecase:
         #...
         
         # acho que nao vai precisar mexer nessa logica aqui
+    
         try:
+            eb_client = EventBridgeClient()
             
-            if new_end_date != None or new_end_date != current_alert.end_dade: # caso o new end date seja diferente
+            if new_title != None or new_title != alertUpdate.title: # caso o new end date seja diferente
                 
-                eb_client = EventBridgeClient()
+                eb_client.update_trigger_expiration(
+                    alert_id=alert_id,
+                    new_expire=new_title
+                )
+            
+            if new_description != None or new_description != alertUpdate.description: # caso o new end date seja diferente
+                
+                eb_client.update_trigger_expiration(
+                    alert_id=alert_id,
+                    new_expire=new_description
+                )
+                
+            if new_start_date != None or new_start_date != alertUpdate.start_date: # caso o new end date seja diferente
+                
+                eb_client.update_trigger_expiration(
+                    alert_id=alert_id,
+                    new_expire=new_start_date
+                )
+                
+            if new_end_date != None or new_end_date != alertUpdate.end_date: # caso o new end date seja diferente
                 
                 eb_client.update_trigger_expiration(
                     alert_id=alert_id,
                     new_expire=new_end_date
                 )
                 
+            if new_is_rule != None or new_is_rule != alertUpdate.is_rule: # caso o new end date seja diferente
+                
+                eb_client.update_trigger_expiration(
+                    alert_id=alert_id,
+                    new_expire=new_is_rule
+                )
+                  
         except Exception as e:
-            
-            raise Exception
-        # acho que nao vai precisar mexer nessa logica aqui
+            if alertUpdate.validate_dates(alertUpdate.start_date, alertUpdate.end_date) is False:
+                raise EntityError("date")
+        
+            if alertUpdate.validate_order_dates(alertUpdate.start_date, alertUpdate.end_date) is False:
+                raise EntityParameterOrderDatesError(alertUpdate.start_date, alertUpdate.end_date)
 
-        return 
+            raise Exception 
+        # acho que nao vai precisar mexer nessa logica aqui
+        
+        return alertUpdate
