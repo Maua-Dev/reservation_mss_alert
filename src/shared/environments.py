@@ -71,7 +71,7 @@ class Environments:
             return AlertRepositoryMock
         elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
             from src.shared.infra.repositories.alert_repository_dynamo import AlertRepositoryDynamo
-            return AlertRepositoryMock
+            return AlertRepositoryDynamo
         else:
             raise Exception("No repository found for this stage")
 
