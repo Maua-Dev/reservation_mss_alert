@@ -1,6 +1,5 @@
 from src.shared.domain.entities.alert import Alert
 from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
-from src.shared.clients.event_bridge_client import EventBridgeClient
 from src.shared.environments import Environments
 from src.shared.helpers.errors.domain_errors import EntityError, EntityParameterOrderDatesError
 from src.shared.clients.event_bridge_client import EventBridgeClient
@@ -24,7 +23,6 @@ class UpdateAlertUsecase:
             print(f"Updating trigger for alert {alert_id}...")
             eb_client = EventBridgeClient()
             
-            # Aqui está a mudança principal: chamamos o método de ATUALIZAÇÃO
             eb_client.update_trigger_expiration(
                 alert_id=alert_id,
                 new_expire=new_end_date
