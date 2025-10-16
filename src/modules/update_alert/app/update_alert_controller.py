@@ -25,34 +25,36 @@ class UpdateAlertController:
                 raise ForbiddenAction('user')
             
             alert_id = request.data.get("alert_id")
-            title= request.data.get("title", None)
-            description = request.data.get("description", None)
-            start_date = request.data.get("start_date", None)
-            end_date = request.data.get("end_date", None)
-            # severity = request.data.get("severity", None)
-            is_rule = request.data.get("is_rule", None)
+            title= request.data.get("title")
+            description = request.data.get("description")
+            start_date = request.data.get("start_date")
+            end_date = request.data.get("end_date")
+            is_rule = request.data.get("is_rule")
                         
             if not isinstance(title, str):
                 raise WrongTypeParameter(fieldName="title",
                                          fieldTypeExpected="string",
-                                         fieldTypeReceived=type(title).__name__())
+                                         fieldTypeReceived=type(title).__name__)
             if not isinstance(description, str):
                 raise WrongTypeParameter(fieldName="description",
                                          fieldTypeExpected="string",
-                                         fieldTypeReceived=type(description).__name__())
+                                         fieldTypeReceived=type(description).__name__)
             if not isinstance(start_date, int):
                 raise WrongTypeParameter(fieldName="start_date",
                                          fieldTypeExpected="int",
-                                         fieldTypeReceived=type(start_date).__name__())
+                                         fieldTypeReceived=type(start_date).__name__)
             if not isinstance(end_date, int):
                 raise WrongTypeParameter(fieldName="end_date",
                                          fieldTypeExpected="int",
-                                         fieldTypeReceived=type(end_date).__name__())
+                                         fieldTypeReceived=type(end_date).__name__)
             if not isinstance(is_rule, bool):
                 raise WrongTypeParameter(fieldName="is_rule",
                                          fieldTypeExpected="bool",
-                                         fieldTypeReceived=type(is_rule).__name__())
-                
+                                         fieldTypeReceived=type(is_rule).__name__)
+            if end_date<start_date:
+                raise EntityParameterOrderDatesError(start_date=start_date,
+                                                     end_date=end_date)
+                          
             updated_alert = self.usecase(
                 alert_id=alert_id,
                 new_title = title,
@@ -83,3 +85,4 @@ class UpdateAlertController:
         
         except Exception as err:
             return InternalServerError(body=err.args[0])
+
