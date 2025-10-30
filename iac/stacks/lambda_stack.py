@@ -88,6 +88,13 @@ class LambdaStack(Construct):
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=env_vars_with_arn
         )
+
+        self.update_alert = self.create_lambda_api_gateway_integration(
+            module_name="update_alert",
+            method="PUT",
+            mss_alert_api_resource=api_gateway_resource,
+            environment_variables=environment_variables
+        )
         
         event_bridge_policy = iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
@@ -101,6 +108,7 @@ class LambdaStack(Construct):
                 f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
             ]
         )
+        
         
         self.get_alert = self.create_lambda_api_gateway_integration(
             module_name="get_alert",
@@ -131,5 +139,6 @@ class LambdaStack(Construct):
             self.delete_alert,
             self.get_alert,
             self.get_all_alerts,
-            self.get_all_rules
+            self.get_all_rules,
+            self.update_alert
         ]
