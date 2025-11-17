@@ -21,7 +21,11 @@ class TestCreateAlertController:
                 "start_date": int(time.time()),
                 "end_date": int(time.time()) + 720000,
                 # "severity": 2
-                "is_rule": True
+                "is_rule": True,
+                "user_from_authorizer": {
+                    "role": "ADMIN"
+                    # aqui vem outros parametros, por motivos de pratica nao foram colocados
+                }
             }
         )
         

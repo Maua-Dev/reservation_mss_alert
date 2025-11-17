@@ -4,8 +4,8 @@ from .create_alert_usecase import CreateAlertUsecase
 from .create_alert_viewmodel import CreateAlertViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
-from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
+from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
+from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError, Forbidden
 
 
 class CreateAlertController:
@@ -15,6 +15,11 @@ class CreateAlertController:
 
     def __call__(self, request: IRequest) -> IResponse:        
         try:
+            
+            requester_role = request.data.get("user_from_authorizer", {}).get("role", None)
+            
+            if requester_role is None:
+                raise MissingParameters("user role from authorizer")
             
             title = request.data.get("title", None)
             description = request.data.get("description", None)
@@ -58,6 +63,7 @@ class CreateAlertController:
             print("End controller")
 
             alert = self.CreateAlertUsecase(
+                requester_role=requester_role,
                 title=title,
                 description=description,
                 start_date=start_date,
@@ -85,6 +91,10 @@ class CreateAlertController:
         except EntityError as err:
 
             return BadRequest(body=err.message)
+        
+        except ForbiddenAction as err:
+            
+            return Forbidden(body=err.message)
 
         except Exception as err:
 
