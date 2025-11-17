@@ -1,4 +1,5 @@
     
+import json
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
 from .create_alert_usecase import CreateAlertUsecase
 from .create_alert_viewmodel import CreateAlertViewmodel
@@ -16,7 +17,13 @@ class CreateAlertController:
     def __call__(self, request: IRequest) -> IResponse:        
         try:
             
-            requester_role = request.data.get("user_from_authorizer", {}).get("role", None)
+            user = request.data.get("user_from_authorizer")
+            
+            if not isinstance(user, dict):
+                
+                user = json.loads(user)
+            
+            requester_role = user.get("role", None)
             
             if requester_role is None:
                 raise MissingParameters("user role from authorizer")
