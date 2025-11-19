@@ -118,7 +118,6 @@ class LambdaStack(Construct):
             method="GET",
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
-            authorizer=token_authorizer_lambda
         )
         
         self.get_alert = self.create_lambda_api_gateway_integration(
@@ -126,7 +125,6 @@ class LambdaStack(Construct):
             method="GET",
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
-            authorizer=token_authorizer_lambda
         )
         
         self.get_all_alerts = self.create_lambda_api_gateway_integration(
@@ -134,7 +132,6 @@ class LambdaStack(Construct):
             method="GET",
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
-            authorizer=token_authorizer_lambda
         )
         
         self.get_all_rules = self.create_lambda_api_gateway_integration(
@@ -142,7 +139,6 @@ class LambdaStack(Construct):
             method="GET",
             mss_alert_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
-            authorizer=token_authorizer_lambda
         )
     
         self.create_alert.add_to_role_policy(event_bridge_policy)
