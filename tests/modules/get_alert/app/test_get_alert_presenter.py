@@ -1,16 +1,9 @@
 
-from src.modules.get_alert.app.get_alert_presenter import lambda_handler
-from src.modules.get_alert.app.get_alert_usecase import GetAlertUseCase
-from src.shared.infra.repositories.alert_repository_mock import AlertRepositoryMock
-from src.shared.infra.external.observability.observability_mock import ObservabilityMock
-from src.shared.domain.entities.alert import Alert
-import uuid
-import time
+from src.modules.get_alert.app.get_alert_presenter import lambda_handler, repo
 import json
 
 class TestGetAlertPresenter:
     def test_get_alert_presenter(self):
-        repo = AlertRepositoryMock()
         
         id = repo.alerts[1].alert_id
         
