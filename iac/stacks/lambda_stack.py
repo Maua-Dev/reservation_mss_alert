@@ -25,7 +25,7 @@ class LambdaStack(Construct):
             self, module_name.title(),
             code=lambda_.Code.from_asset(f"../src/modules/{module_name}"),
             handler=f"app.{module_name}_presenter.lambda_handler",
-            runtime=lambda_.Runtime.PYTHON_3_9,
+            runtime=lambda_.Runtime("python3.13"),
             layers=[self.lambda_layer, self.lambda_power_tools],
             environment=environment_variables,
             timeout=Duration.seconds(15)
@@ -49,7 +49,7 @@ class LambdaStack(Construct):
 
         self.lambda_layer = lambda_.LayerVersion(self, f"{stack_name}_LambdaLayer_{stage}",
                                                  code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
-                                                 compatible_runtimes=[lambda_.Runtime.PYTHON_3_9]
+                                                 compatible_runtimes=[lambda_.Runtime("python3.13")]
                                                  )
         
         self.lambda_region = environment_variables.get("REGION", 'sa-east-1')
@@ -60,7 +60,7 @@ class LambdaStack(Construct):
             self, "AuthorizerUserMssReservationMssAlertLambda",
             code=lambda_.Code.from_asset("../src/shared/authorizer"),
             handler="authorizer_user_mss.lambda_handler",
-            runtime=lambda_.Runtime.PYTHON_3_9,
+            runtime=lambda_.Runtime("python3.13"),
             layers=[self.lambda_layer, self.lambda_power_tools],
             environment=environment_variables,
             timeout=Duration.seconds(15)
