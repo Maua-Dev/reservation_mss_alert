@@ -10,12 +10,12 @@ class DeleteAlertUsecase():
         self.repo = repo
         
     def __call__(self, 
-                 alert_id: str,
-                #  user_role: str
-                 ):
+        alert_id: str,
+        requester_role: str
+    ):
         
-        # if user_role != "ADMIN":
-        #     raise ForbiddenAction("user, only admin can create rules and alerts")
+        if requester_role != "ADMIN":
+            raise ForbiddenAction("user")
         
         rule_name = f"one-time-trigger-for-alert-{alert_id}"
         

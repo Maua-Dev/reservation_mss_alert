@@ -9,6 +9,8 @@ from aws_cdk.aws_apigateway import RestApi, Cors
 from .lambda_stack import LambdaStack
 from .dynamo_stack import DynamoStack
 
+import os
+
 class IacStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -44,7 +46,8 @@ class IacStack(Stack):
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
             "REGION": self.region,
-            "STACK_NAME": self.stack_name
+            "STACK_NAME": self.stack_name,
+            "USER_API_URL": os.environ.get("USER_API_URL")
         }
 
 

@@ -1,10 +1,6 @@
 import os
-import re
 import json
 import urllib3
-
-from src.shared.environments import Environments
-
 
 def lambda_handler(event, context):
     """
