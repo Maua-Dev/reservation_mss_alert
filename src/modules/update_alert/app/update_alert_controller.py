@@ -23,7 +23,9 @@ class UpdateAlertController:
             
             if user.get("role") != "ADMIN":
                 raise ForbiddenAction('user')
-            
+            else:
+                user_role = user.get("role")
+
             alert_id = request.data.get("alert_id")
             title= request.data.get("title")
             description = request.data.get("description")
@@ -56,6 +58,7 @@ class UpdateAlertController:
                                                      end_date=end_date)
                           
             updated_alert = self.usecase(
+                role = user_role,
                 alert_id=alert_id,
                 new_title = title,
                 new_description = description,
