@@ -1,3 +1,4 @@
+import pytest
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.modules.update_alert.app.update_alert_usecase import UpdateAlertUsecase
 from src.modules.update_alert.app.update_alert_controller import UpdateAlertController

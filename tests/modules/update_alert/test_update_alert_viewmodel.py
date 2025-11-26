@@ -1,3 +1,4 @@
+import pytest
 from src.modules.update_alert.app.update_alert_viewmodel import UpdateAlertViewmodel
 from src.shared.infra.repositories.alert_repository_mock import AlertRepositoryMock
 
