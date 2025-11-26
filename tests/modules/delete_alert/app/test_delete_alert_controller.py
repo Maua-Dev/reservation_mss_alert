@@ -17,7 +17,11 @@ class TestDeleteAlertController():
         
         request = HttpRequest(
             body= {
-                "alert_id": id
+                "alert_id": id,
+                "user_from_authorizer": {
+                    "role": "ADMIN"
+                    # aqui tem mais campos, porem não são necessários para o teste
+                }
             }
         )
         

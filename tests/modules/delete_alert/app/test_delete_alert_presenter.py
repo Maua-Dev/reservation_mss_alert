@@ -29,6 +29,7 @@ class TestDeleteAlertPresenter:
                             "user": json.dumps({
                                 "user": {
                                     "user_id": "c8435c66-13a4-4641-9d54-773b4b8ccc98",
+                                    "role": "ADMIN"
                                 },
                                 "message": "the user was retrieved"
                             })

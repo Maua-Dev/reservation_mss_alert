@@ -8,7 +8,10 @@ class TestAlertUsecase:
         
         test_alert = repo.alerts[0]
         
-        deleted_alert = usecase(alert_id=test_alert.alert_id)
+        deleted_alert = usecase(
+            alert_id=test_alert.alert_id,
+            requester_role="ADMIN"
+        )
         
         assert deleted_alert == test_alert
         assert len(repo.alerts) == 1

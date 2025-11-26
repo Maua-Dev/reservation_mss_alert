@@ -2,19 +2,22 @@ from src.shared.domain.entities.alert import Alert
 from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
 from src.shared.clients.event_bridge_client import EventBridgeClient
 import uuid
-from datetime import datetime, timezone, timedelta
 from src.shared.environments import Environments
-from zoneinfo import ZoneInfo
+
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction
 
 class CreateAlertUsecase:
     def __init__(self, repo: IAlertRepository):
         self.repo = repo
 
-    def __call__(self, title: str, description: str, start_date: int, end_date: int, 
+    def __call__(self, requester_role: str, title: str, description: str, start_date: int, end_date: int, 
                 # severity: int,
                 is_rule: bool) -> Alert:
         
         print("Entered usecase")
+
+        if requester_role != "ADMIN":
+            raise ForbiddenAction("user")
 
         id = str(uuid.uuid4())
         
