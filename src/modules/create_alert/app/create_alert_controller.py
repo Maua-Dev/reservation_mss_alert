@@ -6,7 +6,7 @@ from .create_alert_viewmodel import CreateAlertViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
-from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError, Forbidden
+from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError, Forbidden, Created
 
 
 class CreateAlertController:
@@ -81,7 +81,7 @@ class CreateAlertController:
 
             viewmodel = CreateAlertViewmodel(alert=alert)
 
-            return OK(viewmodel.to_dict())
+            return Created(viewmodel.to_dict())
 
         except NoItemsFound as err:
 
