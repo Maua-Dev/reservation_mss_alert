@@ -40,9 +40,7 @@ class IacStack(Stack):
                                                                )
 
         self.dynamo_table = DynamoStack(self)
-        
-        self.sm_stack = SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
-        
+                
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
             "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
@@ -53,6 +51,8 @@ class IacStack(Stack):
             "USER_API_URL": os.environ.get("USER_API_URL"),
             "EVENT_SECRET_ARN": self.sm_stack.event_secret.secret_arn
         }
+        
+        self.sm_stack = SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
 
         self.lambda_stack = LambdaStack(self, api_gateway_resource=api_gateway_resource,
                                         environment_variables=ENVIRONMENT_VARIABLES)
