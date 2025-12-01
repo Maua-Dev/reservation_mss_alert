@@ -17,7 +17,7 @@ class SmStack(Construct):
         stage = environment_variables.get("STAGE", "errorStage")
         stack_name = environment_variables.get("STACK_NAME", "errorStackName")
         
-        super().__init__(scope, f"{stack_name}_LambdaStack_{stage}")
+        super().__init__(scope, f"{stack_name}_SmStack_{stage}")
         
         self.event_secret = secretsmanager.Secret(
             self,
