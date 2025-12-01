@@ -48,11 +48,12 @@ class IacStack(Stack):
             "DYNAMO_SORT_KEY": "SK",
             "REGION": self.region,
             "STACK_NAME": self.stack_name,
-            "USER_API_URL": os.environ.get("USER_API_URL"),
-            "EVENT_SECRET_ARN": self.sm_stack.event_secret.secret_arn
+            "USER_API_URL": os.environ.get("USER_API_URL")
         }
         
         self.sm_stack = SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
+        
+        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"] = self.sm_stack.event_secret.secret_arn
 
         self.lambda_stack = LambdaStack(self, api_gateway_resource=api_gateway_resource,
                                         environment_variables=ENVIRONMENT_VARIABLES)
