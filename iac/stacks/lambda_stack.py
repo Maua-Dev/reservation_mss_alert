@@ -40,7 +40,12 @@ class LambdaStack(Construct):
         )
         return function
 
-    def __init__(self, scope: Construct, api_gateway_resource: Resource, environment_variables: dict) -> None:
+    def __init__(
+        self, 
+        scope: Construct, 
+        api_gateway_resource: Resource, 
+        sm_stack: Construct,
+        environment_variables: dict) -> None:
         
         stage = environment_variables.get("STAGE", "errorStage")
         stack_name = environment_variables.get("STACK_NAME", "errorStackName")
@@ -99,6 +104,11 @@ class LambdaStack(Construct):
             environment_variables=env_vars_with_arn,
             authorizer=token_authorizer_lambda
         )
+        
+        secret = sm_stack.event_secret
+        
+        secret.grant_read(self.create_alert)
+        secret.grant_read(self.delete_alert)
 
         self.update_alert = self.create_lambda_api_gateway_integration(
             module_name="update_alert",

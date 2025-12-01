@@ -1,9 +1,11 @@
 import json
+import os
 from .delete_alert_controller import DeleteAlertController
 from .delete_alert_usecase import DeleteAlertUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 import json
+from src.shared.clients.sm_client import SmClient
 
 repo = Environments.get_alert_repo()()
 usecase = DeleteAlertUsecase(repo)
@@ -15,7 +17,6 @@ def lambda_handler(event, context):
     
     user_info_string = event.get('requestContext', {}).get('authorizer', {}).get('user')
 
-    
     if user_info_string:
         httpRequest.data['user_from_authorizer'] = json.loads(user_info_string).get('user')
     else:
