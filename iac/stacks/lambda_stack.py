@@ -54,7 +54,7 @@ class LambdaStack(Construct):
         
         self.lambda_region = environment_variables.get("REGION", 'sa-east-1')
         self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(self, "Lambda_Power_Tools",
-                                                                              layer_version_arn=f"arn:aws:lambda:{self.lambda_region}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python312-x86_64:18")
+                                                                              layer_version_arn=f"arn:aws:lambda:{self.lambda_region}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:18")
 
         authorizer_lambda = lambda_.Function(
             self, "AuthorizerUserMssReservationMssAlertLambda",
