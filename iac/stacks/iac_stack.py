@@ -55,8 +55,12 @@ class IacStack(Stack):
         
         ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"] = self.sm_stack.event_secret.secret_arn
 
-        self.lambda_stack = LambdaStack(self, api_gateway_resource=api_gateway_resource,
-                                        environment_variables=ENVIRONMENT_VARIABLES)
+        self.lambda_stack = LambdaStack(
+            self,
+            api_gateway_resource=api_gateway_resource,
+            environment_variables=ENVIRONMENT_VARIABLES,
+            sm_stack=self.sm_stack
+        )
 
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
             self.dynamo_table.table.grant_read_write_data(function)
