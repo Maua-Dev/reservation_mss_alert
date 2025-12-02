@@ -159,6 +159,7 @@ class LambdaStack(Construct):
     
         self.create_alert.add_to_role_policy(event_bridge_policy)
         self.delete_alert.add_to_role_policy(event_bridge_policy)
+        self.update_alert.add_to_role_policy(event_bridge_policy)
         
         self.functions_that_need_dynamo_permissions = [
             self.create_alert, 
