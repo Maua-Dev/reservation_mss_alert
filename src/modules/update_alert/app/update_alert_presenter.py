@@ -1,7 +1,5 @@
-from src.modules.update_alert.app.update_alert_usecase import UpdateAlertUsecase
-from src.modules.update_alert.app.update_alert_viewmodel import UpdateAlertViewmodel
-from src.modules.update_alert.app.update_alert_controller import UpdateAlertController
-from src.shared.infra.repositories.alert_repository_mock import AlertRepositoryMock
+from .update_alert_usecase import UpdateAlertUsecase
+from .update_alert_controller import UpdateAlertController
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 import json

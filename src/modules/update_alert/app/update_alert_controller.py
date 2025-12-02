@@ -1,8 +1,6 @@
-from src.shared.domain.entities.alert import Alert
-from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
 from src.shared.helpers.external_interfaces.http_models import IRequest, IResponse
-from src.modules.update_alert.app.update_alert_usecase import UpdateAlertUsecase
-from src.modules.update_alert.app.update_alert_viewmodel import UpdateAlertViewmodel
+from .update_alert_usecase import UpdateAlertUsecase
+from .update_alert_viewmodel import UpdateAlertViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError, EntityParameterOrderDatesError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
