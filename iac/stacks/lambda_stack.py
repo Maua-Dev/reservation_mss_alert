@@ -129,7 +129,8 @@ class LambdaStack(Construct):
                 "events:PutRule",
                 "events:PutTargets",
                 "events:DeleteRule",
-                "events:RemoveTargets"
+                "events:RemoveTargets",
+                "events:DescribeRule"
             ],
             resources=[
                 f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
