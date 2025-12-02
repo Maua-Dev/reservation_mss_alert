@@ -104,11 +104,6 @@ class LambdaStack(Construct):
             environment_variables=env_vars_with_arn,
             authorizer=token_authorizer_lambda
         )
-        
-        secret = sm_stack.event_secret
-        
-        secret.grant_read(self.create_alert)
-        secret.grant_read(self.delete_alert)
 
         self.update_alert = self.create_lambda_api_gateway_integration(
             module_name="update_alert",
@@ -117,6 +112,16 @@ class LambdaStack(Construct):
             environment_variables=environment_variables,
             authorizer=token_authorizer_lambda
         )
+        
+        # ALL LAMBDAS THAT USE EVENT BRIDGE CLIENT NEED READ ACCESS TO THE SECRET
+        
+        secret = sm_stack.event_secret
+                
+        secret.grant_read(self.create_alert)
+        secret.grant_read(self.delete_alert)
+        secret.grant_read(self.update_alert)
+        
+        # ALL LAMBDAS THAT USE EVENT BRIDGE CLIENT NEED READ ACCESS TO THE SECRET
         
         event_bridge_policy = iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
