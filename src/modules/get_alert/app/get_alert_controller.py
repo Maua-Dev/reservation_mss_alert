@@ -19,7 +19,6 @@ class GetAlertController:
             self.observability.log_controller_in()
             if request.data.get('alert_id') is None:
                 raise MissingParameters('alert_id')
-
             try:
                 UUID(request.data.get('alert_id'))
             except ValueError:

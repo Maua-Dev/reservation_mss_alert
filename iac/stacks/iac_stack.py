@@ -7,6 +7,7 @@ from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
 from .lambda_stack import LambdaStack
+from .sm_stack import SmStack
 from .dynamo_stack import DynamoStack
 
 import os
@@ -39,7 +40,7 @@ class IacStack(Stack):
                                                                )
 
         self.dynamo_table = DynamoStack(self)
-
+                
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
             "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
@@ -49,10 +50,17 @@ class IacStack(Stack):
             "STACK_NAME": self.stack_name,
             "USER_API_URL": os.environ.get("USER_API_URL")
         }
+        
+        self.sm_stack = SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
+        
+        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"] = self.sm_stack.event_secret.secret_arn
 
-
-        self.lambda_stack = LambdaStack(self, api_gateway_resource=api_gateway_resource,
-                                        environment_variables=ENVIRONMENT_VARIABLES)
+        self.lambda_stack = LambdaStack(
+            self,
+            api_gateway_resource=api_gateway_resource,
+            environment_variables=ENVIRONMENT_VARIABLES,
+            sm_stack=self.sm_stack
+        )
 
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
             self.dynamo_table.table.grant_read_write_data(function)

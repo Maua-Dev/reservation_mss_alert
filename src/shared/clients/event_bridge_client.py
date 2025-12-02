@@ -1,4 +1,5 @@
 import boto3
+from src.shared.clients.sm_client import SmClient
 from src.shared.environments import Environments
 import uuid
 from datetime import datetime, timezone
@@ -134,7 +135,11 @@ class EventBridgeClient:
         try:
             print(f"Attempting to set target for rule: {rule_name}")
             
-            body_content = {"alert_id": alert_id}
+            body_content = {
+                "alert_id": alert_id,
+                "rule_name": rule_name,
+                "signature": SmClient().sign(rule_name=rule_name, alert_id=alert_id)
+            }
             
             lambda_payload = {
                 "body": json.dumps(body_content)

@@ -1,4 +1,6 @@
 import json
+
+from src.shared.clients.sm_client import SmClient
 from .delete_alert_usecase import DeleteAlertUsecase
 from .delete_alert_viewmodel import DeleteAlertViewmodel
 from src.shared.helpers.external_interfaces.http_models import IRequest, IResponse
@@ -15,30 +17,48 @@ class DeleteAlertController():
         
         try:
             
-            user = request.data.get("user_from_authorizer")
+            signature = request.data.get("signature") # Pega o valor
             
-            if not isinstance(user, dict):
+            if signature:
                 
-                user = json.loads(user)
-            
-            requester_role = user.get("role", None)
-            
-            if requester_role is None:
-                raise MissingParameters("user role from authorizer")
+                sm_client = SmClient()
+                rule_name = request.data.get("rule_name")
+                alert_id = request.data.get("alert_id")
+                
+                if not sm_client.verify(rule_name=rule_name, alert_id=alert_id, signature=signature):
+                    return InternalServerError(body="Invalid signature")
+                
+                deleted_alert = self.usecase(
+                    alert_id=alert_id,
+                    requester_role="ADMIN"
+                )
+                
+            else:
+                
+                user = request.data.get("user_from_authorizer")
+                
+                if not isinstance(user, dict):
+                    
+                    user = json.loads(user)
+                
+                requester_role = user.get("role", None)
+                
+                if requester_role is None:
+                    raise MissingParameters("user role from authorizer")
 
-            alert_id = request.data.get("alert_id", None)
-            
-            if alert_id is None:
-                raise MissingParameters("alert_id")
-            if not isinstance(alert_id, str):
-                raise WrongTypeParameter(fieldName="alert_id",
-                                         fieldTypeExpected="str",
-                                         fieldTypeReceived=type(alert_id).__name__)
+                alert_id = request.data.get("alert_id", None)
                 
-            deleted_alert = self.usecase(
-                alert_id=alert_id, 
-                requester_role=requester_role
-            )
+                if alert_id is None:
+                    raise MissingParameters("alert_id")
+                if not isinstance(alert_id, str):
+                    raise WrongTypeParameter(fieldName="alert_id",
+                                            fieldTypeExpected="str",
+                                            fieldTypeReceived=type(alert_id).__name__)
+                    
+                deleted_alert = self.usecase(
+                    alert_id=alert_id, 
+                    requester_role=requester_role
+                )
             
             return OK(DeleteAlertViewmodel(alert=deleted_alert).to_dict())
             

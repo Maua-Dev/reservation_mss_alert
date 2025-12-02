@@ -1,0 +1,14 @@
+from src.modules.get_alert.app.get_alert_usecase import GetAlertUseCase
+from src.shared.infra.repositories.alert_repository_mock import AlertRepositoryMock
+from src.shared.environments import Environments
+
+observability = Environments.get_observability()(module_name="get_alert")
+
+class TestAlertUseCase:
+    def test_get_alert_controller(self):
+        repo = AlertRepositoryMock()
+        usecase = GetAlertUseCase(repo = repo, observability = observability)
+        response = usecase(repo.alerts[0].alert_id)
+        
+        assert response == repo.alerts[0]
+        
