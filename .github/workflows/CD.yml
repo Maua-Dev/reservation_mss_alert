@@ -1,9 +1,85 @@
 
+
 name: CD
 
 on:
   push:
     branches:
-      - main
+      - prod
+      - dev
+      - homolog
 
-  workflow_dispatch:
+jobs:
+
+  DeployToAws:
+
+    environment:
+      name: ${{ github.ref_name }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set AWS Account ID
+        run: |
+          if [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "homolog" ]]; then
+            echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_HOML }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "prod" ]]; then
+            echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+          else
+            echo "Invalid branch name!" && exit 1
+          fi
+
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/GithubActionsRole
+          role-session-name: github-action
+
+      - name: Setting stage and stack name
+        run: |
+          echo "STAGE=${{ github.ref_name }}" 
+          if [[ "${{ github.ref_name }}" == "prod" ]]; then
+            echo "STAGE=prod" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "homolog" ]]; then
+            echo "STAGE=homolog" >> $GITHUB_ENV
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "STAGE=dev" >> $GITHUB_ENV
+          else
+            echo "Invalid branch name!" && exit 1
+          fi
+          echo "STACK_NAME=ReservationStackAlerts${{ env.STAGE }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Installing Dependencies
+        run: |
+          npm install -g aws-cdk
+          cd iac
+          pip install -r requirements.txt
+
+      - name: DeployWithCDK
+        run: |
+          cd iac
+          cdk synth
+          cdk deploy --require-approval never
+
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
+          STACK_NAME: ${{ env.STACK_NAME }}
+          USER_API_URL: ${{ secrets.USER_API_URL }}
+          GITHUB_REF_NAME: ${{ env.STAGE }}
+    

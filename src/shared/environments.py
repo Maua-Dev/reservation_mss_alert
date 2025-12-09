@@ -3,7 +3,7 @@ from enum import Enum
 import os
 from src.shared.domain.observability.observability_interface import IObservability
 
-from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.alert_repository_interface import IAlertRepository
 
 
 class STAGE(Enum):
@@ -47,10 +47,12 @@ class Environments:
             self.s3_bucket_name = "bucket-test"
             self.region = "sa-east-1"
             self.endpoint_url = "http://localhost:8000"
-            self.dynamo_table_name = "user_mss_template-table"
+            self.dynamo_table_name = "reservation-mss-alert-table"
             self.dynamo_partition_key = "PK"
             self.dynamo_sort_key = "SK"
-            self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
+            self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net",
+            self.client_id = "local123client"
+            self.client_secret = "local123secret"
 
         else:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
@@ -60,15 +62,16 @@ class Environments:
             self.dynamo_partition_key = os.environ.get("DYNAMO_PARTITION_KEY")
             self.dynamo_sort_key = os.environ.get("DYNAMO_SORT_KEY")
             self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
+            self.delete_alert_lambda_arn = os.environ.get("DELETE_ALERT_LAMBDA_ARN")
 
     @staticmethod
-    def get_user_repo() -> IUserRepository:
+    def get_alert_repo() -> IAlertRepository:
         if Environments.get_envs().stage == STAGE.TEST:
-            from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
-            return UserRepositoryMock
+            from src.shared.infra.repositories.alert_repository_mock import AlertRepositoryMock
+            return AlertRepositoryMock
         elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
-            from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
-            return UserRepositoryDynamo
+            from src.shared.infra.repositories.alert_repository_dynamo import AlertRepositoryDynamo
+            return AlertRepositoryDynamo
         else:
             raise Exception("No repository found for this stage")
 

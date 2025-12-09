@@ -11,4 +11,8 @@ class DuplicatedItem(BaseError):
 class ForbiddenAction(BaseError):
     def __init__(self, message: str):
         super().__init__(f'That action is forbidden for this {message}')
+        
+class NotRuleError(BaseError):
+    def __init__(self):
+        super().__init__(f'The id passed is not a rule')
 
