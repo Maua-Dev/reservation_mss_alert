@@ -20,24 +20,28 @@ class IacStack(Stack):
         outside_tags = kwargs.get("tags", {})
         stage = outside_tags.get("stage")
         
-        self.rest_api = RestApi(self, f"{self.stack_name}_RestApi_{stage}",
-                                    rest_api_name=f"{self.stack_name}_RestApi_{stage}",
-                                    description=f"This is the {self.stack_name} {stage} RestApi",
-                                    default_cors_preflight_options=
-                                    {
-                                        "allow_origins": Cors.ALL_ORIGINS,
-                                        "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                                        "allow_headers": ["*"]
-                                    },
-                                )
+        self.rest_api = RestApi(
+            self, 
+            f"{self.stack_name}_RestApi_{stage}",
+            rest_api_name=f"{self.stack_name}_RestApi_{stage}",
+            description=f"This is the {self.stack_name} {stage} RestApi",
+            default_cors_preflight_options=
+            {
+                "allow_origins": ["https://reservation.maua.br"] if stage == "PROD" else ["https://reservation.maua.br", "localhost:3000"],
+                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": Cors.DEFAULT_HEADERS
+            },
+        )
 
-        api_gateway_resource = self.rest_api.root.add_resource("reservation-mss-alert", default_cors_preflight_options=
-        {
-            "allow_origins": Cors.ALL_ORIGINS,
-            "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": Cors.DEFAULT_HEADERS
-        }
-                                                               )
+        api_gateway_resource = self.rest_api.root.add_resource(
+            "reservation-mss-alert", 
+            default_cors_preflight_options=
+            {
+                "allow_origins": ["https://reservation.maua.br"] if stage == "PROD" else ["https://reservation.maua.br", "localhost:3000"],
+                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": Cors.DEFAULT_HEADERS
+            }
+        )
 
         self.dynamo_table = DynamoStack(self)
                 
