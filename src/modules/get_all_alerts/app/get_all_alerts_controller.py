@@ -1,3 +1,4 @@
+from src.shared.helpers.external_interfaces.http_codes import NotFound
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
 from .get_all_alerts_usecase import GetAllAlertsUsecase
 from .get_all_alerts_viewmodel import GetAllAlertsViewmodel
@@ -27,7 +28,7 @@ class GetAllAlertsController:
         
         except NoItemsFound as err:
             
-            return BadRequest(body=err)
+            return NotFound(body=err.message)
 
         except Exception as err:
 
