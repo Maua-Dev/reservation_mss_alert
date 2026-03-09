@@ -4,7 +4,7 @@ from aws_cdk import (
     # aws_sqs as sqs,
 )
 from constructs import Construct
-from aws_cdk.aws_apigateway import RestApi, Cors
+from aws_cdk.aws_apigateway import RestApi, Cors, CorsOptions
 
 from .lambda_stack import LambdaStack
 from .sm_stack import SmStack
@@ -20,27 +20,35 @@ class IacStack(Stack):
         outside_tags = kwargs.get("tags", {})
         stage = outside_tags.get("stage")
         
+        cors_options = CorsOptions(
+            allow_origins =
+                [
+                    "https://reservation.maua.br",
+                    "https://reservation.devmaua.com"
+                ] 
+            if stage == 'PROD'
+            else 
+                [
+                    "https://reservation.hml.devmaua.com",
+                    "https://reservation.dev.devmaua.com",
+                    "https://localhost:3000",
+                    "http://localhost:3000"
+                ],
+            allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allow_headers=Cors.DEFAULT_HEADERS
+        )
+        
         self.rest_api = RestApi(
             self, 
             f"{self.stack_name}_RestApi_{stage}",
             rest_api_name=f"{self.stack_name}_RestApi_{stage}",
             description=f"This is the {self.stack_name} {stage} RestApi",
-            default_cors_preflight_options=
-            {
-                "allow_origins": ["https://reservation.maua.br"] if stage == "PROD" else ["https://reservation.maua.br", "localhost:3000"],
-                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": Cors.DEFAULT_HEADERS
-            },
+            default_cors_preflight_options=cors_options
         )
 
         api_gateway_resource = self.rest_api.root.add_resource(
             "reservation-mss-alert", 
-            default_cors_preflight_options=
-            {
-                "allow_origins": ["https://reservation.maua.br"] if stage == "PROD" else ["https://reservation.maua.br", "localhost:3000"],
-                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": Cors.DEFAULT_HEADERS
-            }
+            default_cors_preflight_options=cors_options
         )
 
         self.dynamo_table = DynamoStack(self)
