@@ -4,7 +4,7 @@ from aws_cdk import (
     # aws_sqs as sqs,
 )
 from constructs import Construct
-from aws_cdk.aws_apigateway import RestApi, Cors, CorsOptions
+from aws_cdk.aws_apigateway import RestApi, Cors, CorsOptions, GatewayResponse, ResponseType
 
 from .lambda_stack import LambdaStack
 from .sm_stack import SmStack
@@ -44,6 +44,32 @@ class IacStack(Stack):
             rest_api_name=f"{self.stack_name}_RestApi_{stage}",
             description=f"This is the {self.stack_name} {stage} RestApi",
             default_cors_preflight_options=cors_options
+        )
+        
+        GatewayResponse(
+            self,
+            "AuthorizerDenyResponse",
+            rest_api=self.rest_api,
+            type=ResponseType.ACCESS_DENIED,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'*'",
+                "Access-Control-Allow-Methods": "'*'",
+            },
+            status_code="403"
+        )
+        
+        GatewayResponse(
+            self,
+            "AuthorizerUnauthorizedResponse",
+            rest_api=self.rest_api,
+            type=ResponseType.UNAUTHORIZED,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'*'",
+                "Access-Control-Allow-Methods": "'*'",
+            },
+            status_code="401"
         )
 
         api_gateway_resource = self.rest_api.root.add_resource(
