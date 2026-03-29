@@ -58,6 +58,43 @@ jobs:
           fi
           echo "STACK_NAME=ReservationStackAlerts${{ env.STAGE }}" >> $GITHUB_ENV
 
+      - name: Fetch config from SSM
+        run: |
+          STAGE="${{ github.ref_name }}"
+
+          USER_API_BASE=$(aws ssm get-parameter \
+            --name "/reservationmssuser/$STAGE/api/url" \
+            --query "Parameter.Value" --output text) || true
+
+          if [ -n "$USER_API_BASE" ]; then
+            echo "::add-mask::$API_BASE"
+          fi
+
+          echo "API_BASE=$API_BASE" >> $GITHUB_ENV
+  
+      - name: Validate variables from ssm
+        shell: /usr/bin/bash -e {0}
+        run: |
+          missing=()
+      
+          check_var() {
+            local key=$1
+            local value=$2
+            if [ -z "$value" ]; then
+              missing+=("$key")
+            fi
+          }
+      
+          check_var "API_BASE" "$API_BASE"
+      
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "❌ Missing environment variables:"
+            printf ' - %s\n' "${missing[@]}"
+            exit 1
+          fi
+      
+          echo "✅ All environment variables from ssm are set"
+
       - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v4
