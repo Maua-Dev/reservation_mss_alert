@@ -6,9 +6,12 @@ from aws_cdk import (
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors, CorsOptions, GatewayResponse, ResponseType
 
-from .lambda_stack import LambdaStack
-from .sm_stack import SmStack
-from .dynamo_stack import DynamoStack
+from components.lambda_construct import LambdaConstruct
+from components.sm_construct import SmConstruct
+from components.dynamo_construct import DynamoConstruct
+from components.ssm_construct import SsmConstruct
+from components.apigw_construct import ApigwConstruct
+
 
 import os
 
@@ -20,64 +23,17 @@ class IacStack(Stack):
         outside_tags = kwargs.get("tags", {})
         stage = outside_tags.get("stage")
         
-        cors_options = CorsOptions(
-            allow_origins =
-                [
-                    "https://reservation.maua.br",
-                    "https://reservation.devmaua.com"
-                ] 
-            if stage == 'PROD'
-            else 
-                [
-                    "https://reservation.hml.devmaua.com",
-                    "https://reservation.dev.devmaua.com",
-                    "https://localhost:3000",
-                    "http://localhost:3000"
-                ],
-            allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            allow_headers=Cors.DEFAULT_HEADERS
-        )
-        
-        self.rest_api = RestApi(
-            self, 
-            f"{self.stack_name}_RestApi_{stage}",
-            rest_api_name=f"{self.stack_name}_RestApi_{stage}",
-            description=f"This is the {self.stack_name} {stage} RestApi",
-            default_cors_preflight_options=cors_options
-        )
-        
-        GatewayResponse(
+        self.apigw_construct = ApigwConstruct(
             self,
-            "AuthorizerDenyResponse",
-            rest_api=self.rest_api,
-            type=ResponseType.ACCESS_DENIED,
-            response_headers={
-                "Access-Control-Allow-Origin": "'*'",
-                "Access-Control-Allow-Headers": "'*'",
-                "Access-Control-Allow-Methods": "'*'",
-            },
-            status_code="403"
-        )
-        
-        GatewayResponse(
-            self,
-            "AuthorizerUnauthorizedResponse",
-            rest_api=self.rest_api,
-            type=ResponseType.UNAUTHORIZED,
-            response_headers={
-                "Access-Control-Allow-Origin": "'*'",
-                "Access-Control-Allow-Headers": "'*'",
-                "Access-Control-Allow-Methods": "'*'",
-            },
-            status_code="401"
+            construct_id="ReservationMssAlertApigw",
+            stage=stage
         )
 
-        api_gateway_resource = self.rest_api.root.add_resource(
-            "reservation-mss-alert", 
-            default_cors_preflight_options=cors_options
+        self.dynamo_table = DynamoConstruct(
+            self,
+            construct_id="ReservationMssAlertDynamo",
+            stage=stage
         )
-
-        self.dynamo_table = DynamoStack(self)
                 
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
@@ -89,15 +45,21 @@ class IacStack(Stack):
             "USER_API_URL": os.environ.get("USER_API_URL")
         }
         
-        self.sm_stack = SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
+        self.sm_construct = SmConstruct(
+            self,
+            construct_id="ReservationMssAlertSecretsManager",
+            stage=stage,
+            environment_variables=ENVIRONMENT_VARIABLES,
+        )
         
         ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"] = self.sm_stack.event_secret.secret_arn
 
-        self.lambda_stack = LambdaStack(
+        self.lambda_construct = LambdaConstruct(
             self,
-            api_gateway_resource=api_gateway_resource,
-            environment_variables=ENVIRONMENT_VARIABLES,
-            sm_stack=self.sm_stack
+            construct_id="ReservationMssAlertLambda",
+            api_gateway_resource=self.apigw_construct.api_gateway_resource,
+            sm_construct=self.sm_construct,
+            environment_variables=ENVIRONMENT_VARIABLES
         )
 
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
