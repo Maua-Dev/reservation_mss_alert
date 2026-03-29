@@ -62,7 +62,7 @@ class IacStack(Stack):
             environment_variables=ENVIRONMENT_VARIABLES
         )
 
-        for function in self.lambda_stack.functions_that_need_dynamo_permissions:
+        for function in self.lambda_construct.functions_that_need_dynamo_permissions:
             self.dynamo_table.table.grant_read_write_data(function)
 
         
