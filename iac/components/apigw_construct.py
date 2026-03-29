@@ -30,9 +30,9 @@ class ApigwConstruct(Construct):
         
         self.rest_api = RestApi(
             self, 
-            f"{self.stack_name}_RestApi_{stage}",
-            rest_api_name=f"{self.stack_name}_RestApi_{stage}",
-            description=f"This is the {self.stack_name} {stage} RestApi",
+            f"ReservationMssAlert_RestApi_{stage}",
+            rest_api_name=f"ReservationMssAlert_RestApi_{stage}",
+            description=f"This is the ReservationMssAlert {stage} RestApi",
             default_cors_preflight_options=cors_options
         )
         
