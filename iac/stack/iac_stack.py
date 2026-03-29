@@ -52,7 +52,7 @@ class IacStack(Stack):
             environment_variables=ENVIRONMENT_VARIABLES,
         )
         
-        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"] = self.sm_stack.event_secret.secret_arn
+        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"] = self.sm_construct.event_secret.secret_arn
 
         self.lambda_construct = LambdaConstruct(
             self,
