@@ -1,28 +1,29 @@
-import os
+from typing import Optional
 from aws_cdk import (
     aws_lambda as lambda_,
-    NestedStack, Duration,
+    Duration,
     aws_apigateway as apigw,
-    CfnOutput, Stack,
+    Stack,
     aws_iam as iam
 )
 from constructs import Construct
-from aws_cdk.aws_apigateway import Resource, LambdaIntegration
+from aws_cdk.aws_apigateway import Resource, LambdaIntegration, TokenAuthorizer
 
 
-class LambdaStack(Construct):
+class LambdaConstruct(Construct):
     functions_that_need_dynamo_permissions = []
 
     def create_lambda_api_gateway_integration(
-        self, 
-        module_name: str, 
-        method: str, 
-        mss_alert_api_resource: Resource,
-        environment_variables: dict = {"STAGE": "TEST"},
-        authorizer: apigw.IAuthorizer = None
+            self,
+            module_name: str,
+            method: str,
+            mss_student_api_resource: Resource,
+            environment_variables: dict = {"STAGE": "TEST"},
+            authorizer: Optional[TokenAuthorizer] = None
     ):
         function = lambda_.Function(
-            self, module_name.title(),
+            self, 
+            id=module_name.title(),
             code=lambda_.Code.from_asset(f"../src/modules/{module_name}"),
             handler=f"app.{module_name}_presenter.lambda_handler",
             runtime=lambda_.Runtime("python3.13"),
@@ -31,36 +32,45 @@ class LambdaStack(Construct):
             timeout=Duration.seconds(15)
         )
 
-        mss_alert_api_resource.add_resource(
+        mss_student_api_resource.add_resource(
             module_name.replace("_", "-")
-            ).add_method(
-                method,
-                integration=LambdaIntegration(function),
-                authorizer=authorizer
+        ).add_method(
+            method,
+            integration=LambdaIntegration(
+                function
+            ),
+            authorization_type=apigw.AuthorizationType.CUSTOM if authorizer else apigw.AuthorizationType.NONE,
+            authorizer=authorizer
         )
+
         return function
 
     def __init__(
-        self, 
-        scope: Construct, 
-        api_gateway_resource: Resource, 
-        sm_stack: Construct,
-        environment_variables: dict) -> None:
-        
-        stage = environment_variables.get("STAGE", "errorStage")
-        stack_name = environment_variables.get("STACK_NAME", "errorStackName")
-        
-        super().__init__(scope, f"{stack_name}_LambdaStack_{stage}")
+        self,
+        scope: Construct,
+        construct_id: str,
+        api_gateway_resource: Resource,
+        sm_construct: Construct,
+        environment_variables: dict,
+        **kargs,
+    ) -> None:
+        super().__init__(scope, construct_id, **kargs)
 
-        self.lambda_layer = lambda_.LayerVersion(self, f"{stack_name}_LambdaLayer_{stage}",
-                                                 code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
-                                                 compatible_runtimes=[lambda_.Runtime("python3.13")]
-                                                 )
-        
+        self.lambda_layer = lambda_.LayerVersion(
+            self, 
+            id="ReservationMssAlert_Layer",
+            code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
+            compatible_runtimes=[lambda_.Runtime("python3.13")]
+        )
+
         self.lambda_region = environment_variables.get("REGION", 'sa-east-1')
-        self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(self, "Lambda_Power_Tools",
-                                                                              layer_version_arn=f"arn:aws:lambda:{self.lambda_region}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:18")
-
+        
+        self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(
+            self, 
+            "Lambda_Power_Tools",
+            layer_version_arn=f"arn:aws:lambda:{self.lambda_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:22"
+        )
+        
         authorizer_lambda = lambda_.Function(
             self, "AuthorizerUserMssReservationMssAlertLambda",
             code=lambda_.Code.from_asset("../src/shared/authorizer"),
@@ -115,7 +125,7 @@ class LambdaStack(Construct):
         
         # ALL LAMBDAS THAT USE EVENT BRIDGE CLIENT NEED READ ACCESS TO THE SECRET
         
-        secret = sm_stack.event_secret
+        secret = sm_construct.event_secret
                 
         secret.grant_read(self.create_alert)
         secret.grant_read(self.delete_alert)
