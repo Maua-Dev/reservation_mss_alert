@@ -59,7 +59,7 @@ class LambdaConstruct(Construct):
         self.lambda_layer = lambda_.LayerVersion(
             self, 
             id="ReservationMssAlert_Layer",
-            code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
+            code=lambda_.Code.from_asset("./build"),
             compatible_runtimes=[lambda_.Runtime("python3.13")]
         )
 
