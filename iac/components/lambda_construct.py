@@ -17,7 +17,7 @@ class LambdaConstruct(Construct):
             self,
             module_name: str,
             method: str,
-            mss_student_api_resource: Resource,
+            mss_alert_api_resource: Resource,
             environment_variables: dict = {"STAGE": "TEST"},
             authorizer: Optional[TokenAuthorizer] = None
     ):
@@ -32,7 +32,7 @@ class LambdaConstruct(Construct):
             timeout=Duration.seconds(15)
         )
 
-        mss_student_api_resource.add_resource(
+        mss_alert_api_resource.add_resource(
             module_name.replace("_", "-")
         ).add_method(
             method,
