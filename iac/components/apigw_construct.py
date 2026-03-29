@@ -30,9 +30,20 @@ class ApigwConstruct(Construct):
         
         self.rest_api = RestApi(
             self, 
-            f"ReservationMssAlert_RestApi_{stage}",
-            rest_api_name=f"ReservationMssAlert_RestApi_{stage}",
-            description=f"This is the ReservationMssAlert {stage} RestApi",
+            id=f"ReservationMssAlert_RestApi_{self.stage}",
+            rest_api_name=f"ReservationMssAlert_RestApi_{self.stage}",
+            description=f"This is the ReservationMssAlert RestApi for {self.stage}",
+            deploy_options=apigateway.StageOptions(
+                stage_name=stage.lower(),
+                logging_level=apigateway.MethodLoggingLevel.OFF,
+                data_trace_enabled=False,
+                metrics_enabled=True,
+            ),
+            default_cors_preflight_options=cors_options,
+        )
+        
+        self.api_gateway_resource = self.rest_api.root.add_resource(
+            "reservation-mss-alert", 
             default_cors_preflight_options=cors_options
         )
         
@@ -60,9 +71,4 @@ class ApigwConstruct(Construct):
                 "Access-Control-Allow-Methods": "'*'",
             },
             status_code="401"
-        )
-
-        self.api_gateway_resource = self.rest_api.root.add_resource(
-            "reservation-mss-alert", 
-            default_cors_preflight_options=cors_options
         )
