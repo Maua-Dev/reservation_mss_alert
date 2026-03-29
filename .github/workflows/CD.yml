@@ -67,10 +67,10 @@ jobs:
             --query "Parameter.Value" --output text) || true
 
           if [ -n "$USER_API_BASE" ]; then
-            echo "::add-mask::$API_BASE"
+            echo "::add-mask::$USER_API_BASE"
           fi
 
-          echo "API_BASE=$API_BASE" >> $GITHUB_ENV
+          echo "USER_API_BASE=$USER_API_BASE" >> $GITHUB_ENV
   
       - name: Validate variables from ssm
         shell: /usr/bin/bash -e {0}
@@ -85,7 +85,7 @@ jobs:
             fi
           }
       
-          check_var "API_BASE" "$API_BASE"
+          check_var "USER_API_BASE" "$USER_API_BASE"
       
           if [ ${#missing[@]} -gt 0 ]; then
             echo "❌ Missing environment variables:"
