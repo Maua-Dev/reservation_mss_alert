@@ -34,6 +34,18 @@ class IacStack(Stack):
             construct_id="ReservationMssAlertDynamo",
             stage=stage
         )
+        
+        self.ssm_construct = SsmConstruct(
+            self,
+            construct_id="ReservationMssAlertSsm",
+            stage=stage,
+            # atenção para esse próximo parâmetro. de preferencia deixe tudo minusculo sem _
+            # isso deve corresponder ao prefixo de caminho passado no CD dos outros mss (inclusive front)
+            # que acessam os parametros no ssm.
+            mss_name_identification_for_path="reservationmssalert",
+            api=self.apigw_construct.rest_api,
+            api_gateway_resource=self.apigw_construct.api_gateway_resource
+        )
                 
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
