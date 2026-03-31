@@ -28,6 +28,7 @@ class DynamoConstruct(Construct):
         self.table = dynamodb.Table(
             self,
             id=f"{stack_name}_DynamoTable_{stage}",
+            table_name=f"{stack_name}_DynamoTable_{stage}",
             partition_key=dynamodb.Attribute(
                 name="PK",
                 type=dynamodb.AttributeType.STRING,

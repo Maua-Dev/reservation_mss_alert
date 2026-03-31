@@ -33,6 +33,7 @@ IacStack(
     app, 
     stack_id=stack_name, 
     stage=stage,
+    stack_name=stack_name,
     env=cdk.Environment(
         account=aws_account_id, 
         region=aws_region), 
