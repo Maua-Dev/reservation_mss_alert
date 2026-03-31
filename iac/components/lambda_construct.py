@@ -4,7 +4,8 @@ from aws_cdk import (
     Duration,
     aws_apigateway as apigw,
     Stack,
-    aws_iam as iam
+    aws_iam as iam,
+    Aws
 )
 from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration, TokenAuthorizer
@@ -76,7 +77,7 @@ class LambdaConstruct(Construct):
         self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(
             self, 
             id=f"Lambda_Power_Tools-{stack_name}-{stage}",
-            layer_version_arn=f"arn:aws:lambda:{self.lambda_region}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:30"
+            layer_version_arn=f"arn:aws:lambda:{Aws.REGION}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:30"
         )
         
         authorizer_lambda = lambda_.Function(
