@@ -11,7 +11,9 @@ from aws_cdk.aws_apigateway import Resource, LambdaIntegration, TokenAuthorizer
 
 
 class LambdaConstruct(Construct):
-    functions_that_need_dynamo_permissions = []
+    functions_that_need_dynamo_permissions: list
+    stage: str
+    stack_name: str
 
     def create_lambda_api_gateway_integration(
             self,
@@ -24,6 +26,7 @@ class LambdaConstruct(Construct):
         function = lambda_.Function(
             self, 
             id=module_name.title(),
+            function_name=f"{module_name}-{self.stack_name}-{self.stage}"[:63],
             code=lambda_.Code.from_asset(f"../src/modules/{module_name}"),
             handler=f"app.{module_name}_presenter.lambda_handler",
             runtime=lambda_.Runtime("python3.13"),
@@ -49,43 +52,51 @@ class LambdaConstruct(Construct):
         self,
         scope: Construct,
         construct_id: str,
+        stage: str,
+        stack_name: str,
         api_gateway_resource: Resource,
         sm_construct: Construct,
         environment_variables: dict,
         **kargs,
     ) -> None:
         super().__init__(scope, construct_id, **kargs)
+        
+        self.stage = stage
+        self.stack_name = stack_name
 
         self.lambda_layer = lambda_.LayerVersion(
             self, 
-            id="ReservationMssAlert_Layer",
+            id=f"{stack_name}_LambdaLayer_{stage}",
+            layer_version_name=f"{stack_name}-LambdaLayer-{self.stage}",
+            # a pasta .build foi obtida do adjust layer directory, certifique-se de que a configuração da pasta layer gerada la esta igual
             code=lambda_.Code.from_asset("./build"),
             compatible_runtimes=[lambda_.Runtime("python3.13")]
         )
-
-        self.lambda_region = environment_variables.get("REGION", 'sa-east-1')
         
         self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(
             self, 
-            "Lambda_Power_Tools",
+            id=f"Lambda_Power_Tools-{stack_name}-{stage}",
             layer_version_arn=f"arn:aws:lambda:{self.lambda_region}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:30"
         )
         
         authorizer_lambda = lambda_.Function(
-            self, "AuthorizerUserMssReservationMssAlertLambda",
+            self, 
+            id=f"LambdaUserMssAuthorizer-{self.stack_name}-{self.stage}",
+            function_name=f"lambda_user_mss_authorizer-{self.stack_name}-{self.stage}",
             code=lambda_.Code.from_asset("../src/shared/authorizer"),
-            handler="authorizer_user_mss.lambda_handler",
+            handler="user_mss_authorizer.lambda_handler",
             runtime=lambda_.Runtime("python3.13"),
-            layers=[self.lambda_layer, self.lambda_power_tools],
+            layers=[self.lambda_layer],
             environment=environment_variables,
             timeout=Duration.seconds(15)
         )
 
         token_authorizer_lambda = apigw.TokenAuthorizer(
-            self, "TokenAuthorizerReservationMssUser",
+            self, 
+            id=f"TokenUserMssAuthorizer-{self.stack_name}-{self.stage}",
+            authorizer_name=f"user_mss_authorizer-{self.stack_name}-{self.stage}",
             handler=authorizer_lambda,
             identity_source=apigw.IdentitySource.header("Authorization"),
-            authorizer_name="AuthorizerUserMssReservationMssAlertLambda",
             results_cache_ttl=Duration.seconds(0)
         )
         

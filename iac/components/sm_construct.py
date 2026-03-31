@@ -13,6 +13,7 @@ class SmConstruct(Construct):
         scope: Construct,
         construct_id: str,
         stage: str,
+        stack_name: str,
         environment_variables: dict,
         **kargs
     ):
@@ -21,7 +22,8 @@ class SmConstruct(Construct):
         
         self.event_secret = secretsmanager.Secret(
             self,
-            "EventBridgeDeleteSecretReservationMssAlerts",
+            id=f"{stack_name}_EventBridgeDeleteSecret",
+            secret_name=f"event_bridge_delete_secret_{stack_name}_{stage}".lower(),
             description="Secret used to sign EventBridge delete triggers in reservation mss alerts",
             generate_secret_string=secretsmanager.SecretStringGenerator(
                 secret_string_template=json.dumps({"EVENT_SECRET": ""}),

@@ -5,7 +5,15 @@ from aws_cdk.aws_apigateway import RestApi, Cors, CorsOptions, GatewayResponse, 
 class ApigwConstruct(Construct):
     rest_api: RestApi
     
-    def __init__(self, scope: Construct, construct_id: str, stage: str, **kwargs):
+    def __init__(
+        self, 
+        scope: Construct,
+        construct_id: str,
+        stage: str,
+        stack_name: str,
+        **kwargs
+    ):
+        
         super().__init__(scope, construct_id, **kwargs)
         
         self.stage = stage
@@ -30,8 +38,8 @@ class ApigwConstruct(Construct):
         
         self.rest_api = RestApi(
             self, 
-            id=f"ReservationMssAlert_RestApi_{self.stage}",
-            rest_api_name=f"ReservationMssAlert_RestApi_{self.stage}",
+            id=f"{stack_name}_RestApi_{self.stage}",
+            rest_api_name=f"{stack_name}_RestApi_{self.stage}",
             description=f"This is the ReservationMssAlert RestApi for {self.stage}",
             deploy_options=apigateway.StageOptions(
                 stage_name=stage.lower(),

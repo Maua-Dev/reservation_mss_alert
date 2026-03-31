@@ -10,6 +10,7 @@ class SsmConstruct(Construct):
         scope: Construct,
         construct_id: str,
         stage: str,
+        stack_name: str,
         mss_name_identification_for_path: str,
         api: RestApi,
         api_gateway_resource: Resource,
@@ -33,14 +34,14 @@ class SsmConstruct(Construct):
 
         if api:
             ssm.StringParameter(self,
-                id=f"ApiUrl_{stage}",
+                id=f"{stack_name}_ApiUrl_{stage}",
                 parameter_name=f"/{mss_name_identification_for_path}/{stage}/api/url",
                 string_value=f"{api.url}{api_gateway_resource.path.lstrip('/')}/"
             )
 
         for logical_name, bucket in (buckets or {}).items():
             ssm.StringParameter(self,
-                id=f"Bucket_{logical_name}_{stage}",
+                id=f"{stack_name}_Bucket_{logical_name}_{stage}",
                 parameter_name=f"/{mss_name_identification_for_path}/{stage}/buckets/{logical_name}",
                 string_value=bucket.bucket_name
             )
@@ -48,7 +49,7 @@ class SsmConstruct(Construct):
         for key, value in (extra_params or {}).items():
             safe_id = key.replace("/", "_")
             ssm.StringParameter(self,
-                id=f"Extra_{safe_id}_{stage}",
+                id=f"{stack_name}_Extra_{safe_id}_{stage}",
                 parameter_name=f"/{mss_name_identification_for_path}/{stage}/{key}",
                 string_value=value
             )

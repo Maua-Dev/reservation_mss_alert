@@ -4,7 +4,6 @@ from aws_cdk import (
     # aws_sqs as sqs,
 )
 from constructs import Construct
-from aws_cdk.aws_apigateway import RestApi, Cors, CorsOptions, GatewayResponse, ResponseType
 
 from components.lambda_construct import LambdaConstruct
 from components.sm_construct import SmConstruct
@@ -17,28 +16,36 @@ import os
 
 class IacStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
-        super().__init__(scope, construct_id, **kwargs)
-        
-        outside_tags = kwargs.get("tags", {})
-        stage = outside_tags.get("stage")
+    def __init__(
+        self, 
+        scope: Construct, 
+        stack_id: str,
+        stage: str,
+        stack_name: str,
+        **kwargs
+    ) -> None:
+    
+        super().__init__(scope, stack_id, **kwargs)
         
         self.apigw_construct = ApigwConstruct(
             self,
-            construct_id="ReservationMssAlertApigw",
-            stage=stage
+            construct_id=f"{stack_name}_Apigw",
+            stage=stage,
+            stack_name=stack_name
         )
 
         self.dynamo_table = DynamoConstruct(
             self,
-            construct_id="ReservationMssAlertDynamo",
-            stage=stage
+            construct_id=f"{stack_name}_Dynamo",
+            stage=stage,
+            stack_name=stack_name
         )
         
         self.ssm_construct = SsmConstruct(
             self,
-            construct_id="ReservationMssAlertSsm",
+            construct_id=f"{stack_name}_Ssm",
             stage=stage,
+            stack_name=stack_name,
             # atenção para esse próximo parâmetro. de preferencia deixe tudo minusculo sem _
             # isso deve corresponder ao prefixo de caminho passado no CD dos outros mss (inclusive front)
             # que acessam os parametros no ssm.
@@ -48,7 +55,7 @@ class IacStack(Stack):
         )
                 
         ENVIRONMENT_VARIABLES = {
-            "STAGE": stage,
+            "STAGE": stage.upper(),
             "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
@@ -59,8 +66,9 @@ class IacStack(Stack):
         
         self.sm_construct = SmConstruct(
             self,
-            construct_id="ReservationMssAlertSecretsManager",
+            construct_id=f"{stack_name}_Manager",
             stage=stage,
+            stack_name=stack_name,
             environment_variables=ENVIRONMENT_VARIABLES,
         )
         
@@ -68,7 +76,9 @@ class IacStack(Stack):
 
         self.lambda_construct = LambdaConstruct(
             self,
-            construct_id="ReservationMssAlertLambda",
+            construct_id=f"{stack_name}_Lambda",
+            stage=stage,
+            stack_name=stack_name,
             api_gateway_resource=self.apigw_construct.api_gateway_resource,
             sm_construct=self.sm_construct,
             environment_variables=ENVIRONMENT_VARIABLES
