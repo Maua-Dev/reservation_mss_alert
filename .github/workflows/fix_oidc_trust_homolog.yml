@@ -2,6 +2,9 @@ name: Fix OIDC Trust Homolog
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - homolog
 
 jobs:
   update-trust-policy:
